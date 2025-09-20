@@ -1,0 +1,10 @@
+.vscode/**
+!c_cpp_properties.json
+!launch.json
+!tasks.json
+
+# include ACL in repo (we remove ignore)
+# ac-library/**
+
+*.in
+*.out
