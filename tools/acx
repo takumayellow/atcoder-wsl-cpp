@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+R=$HOME/AtCoderSolution; S=$HOME/.config/acx/last; mkdir -p "${S%/*}"
+CID=${1:-}; P=${2:-}
+if [ -z "$CID" ]; then [ -f "$S" ] || { echo "usage: acx <contest-id> [a..]"; exit 1; }; CID=$(cat "$S"); fi
+if [[ -z "$P" && "$CID" =~ ^[a-hA-H]$ ]]; then P=${CID,,}; CID=$(cat "$S"); fi
+P=${P:-a}; P=${P,,}
+command -v acc >/dev/null; command -v code >/dev/null
+mkdir -p "$R"; cd "$R"
+[ -d "$R/$CID" ] || acc new "$CID"
+cd "$R/$CID/$P"
+[ -f main.cpp ] || printf '#include <bits/stdc++.h>\n#include <atcoder/all>\nusing namespace std; using namespace atcoder;\nint main(){ios::sync_with_stdio(false);cin.tie(nullptr);\n// write code here\nreturn 0;}\n' > main.cpp
+echo "$CID" > "$S"
+code -r -g main.cpp
