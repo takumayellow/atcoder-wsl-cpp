@@ -14,6 +14,7 @@ if [ -f "main.cpp" ]; then
     echo "Testing C++ (main.cpp)..."
     # Use -I for include path. WSL g++ usually fine.
     g++ -std=c++17 -Wall -I "$ACL_PATH" main.cpp -o a.out
+.\acx.bat abc231 a
     oj t -c "./a.out"
 elif [ -f "main.py" ]; then
     echo "Testing Python (main.py)..."
