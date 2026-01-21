@@ -5,6 +5,6 @@ using namespace atcoder;
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    // write code
-    return 0;
+    double a; cin >> a;
+    cout << a / 100 << endl;
 }
