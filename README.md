@@ -3,7 +3,7 @@
 このリポジトリは、WSL上でAtCoderの問題を解くための環境です。
 C++ (ac-library対応) と Python の両方に対応しており、コマンド一つで環境構築やテストが可能です。
 
-## 🚀 セットアップ
+## セットアップ
 
 WSL内のターミナルで以下を実行し、初期設定を行います（初回のみ）。
 
@@ -12,56 +12,84 @@ WSL内のターミナルで以下を実行し、初期設定を行います（�
 ./tools/setup_env.sh
 ```
 
-## 📝 使い方
+## 使い方（Windows / Cursor / PowerShell）
 
-### 1. 問題の準備 (`acx` コマンド)
+### 1. 問題の準備
 
-`tools/acx` スクリプトを使って、コンテスト用フォルダの作成とファイルを開く操作を自動化できます。
-PATHを通すか、aliasを設定すると便利です（例: `alias acx=./tools/acx`）。
+PowerShellまたはCursorのターミナルで:
 
-```bash
-# 基本: C++で直近のコンテストのA問題を開く
-./tools/acx abc364 a
+```powershell
+# ABC231のA問題を開く（C++）
+.\acx.bat abc231 a
 
-# Pythonでやりたい場合
-./tools/acx abc364 a py
+# Pythonで解く場合
+.\acx.bat abc231 a py
 
-# 問題指定のみ（前回開いたコンテストのB問題を開く）
-./tools/acx b
+# 前回と同じコンテストの別問題
+.\acx.bat b
 ```
+
+コンテストフォルダが自動作成され、`main.cpp`（または`main.py`）が現在のCursorウィンドウで開きます。
 
 ### 2. コーディング
 
-作成されたフォルダ（例: `abc364/a/`）内の `main.cpp` または `main.py` を編集します。
-`tools/templates/` 内のファイルがテンプレートとして使用されます。
+開いたファイルにコードを書きます。
 
-### 3. テストの実行 (`test_code.sh`)
+### 3. テスト実行
 
-問題のディレクトリ内で以下のコマンドを実行すると、サンプルケースのテストが行われます。
-言語（C++かPythonか）は自動判定されます。
+問題のディレクトリ（例: `abc231\a`）に移動してから:
 
-```bash
-# 例: abc364/a/ に移動してから
-../../tools/test_code.sh
+```powershell
+# リポジトリルートからの相対パスで実行
+..\..\test.bat
+
+# または、リポジトリルートから絶対パス指定
+C:\Users\takum\Documents\atcoder\atcoder-wsl-cpp\test.bat
 ```
 
 ### 4. 提出
 
+```powershell
+..\..\submit.bat
+```
+
+## 使い方（WSL内から直接）
+
+WSLターミナル内でも同様に使えます。
+
 ```bash
+# 問題の準備
+./tools/acx abc231 a
+
+# テスト
+cd abc231/a
+../../tools/test_code.sh
+
+# 提出
 acc s
 ```
 
-## 📁 フォルダ構成
+## フォルダ構成
 
-- `abcXXX/` : コンテストごとの作業フォルダ
-- `ac-library/` : AtCoder Library (C++用)
-- `tools/`
-  - `acx` : コンテスト準備・エディタ起動用スクリプト
-  - `setup_env.sh` : 環境構築用スクリプト
-  - `test_code.sh` : テスト実行用スクリプト
-  - `templates/` : C++ / Python のテンプレートファイル
+```
+atcoder-wsl-cpp/
+├── abcXXX/           # コンテストごとの作業フォルダ
+│   └── a/            # 問題ごとのフォルダ
+│       ├── main.cpp  # ソースコード
+│       └── test/     # サンプルケース
+├── ac-library/       # AtCoder Library (C++用)
+├── tools/
+│   ├── acx           # コンテスト準備スクリプト (WSL用)
+│   ├── setup_env.sh  # 環境構築用スクリプト
+│   ├── test_code.sh  # テスト実行用スクリプト
+│   └── templates/    # C++ / Python のテンプレートファイル
+├── acx.bat           # Windows用ラッパー（問題準備）
+├── test.bat          # Windows用ラッパー（テスト）
+└── submit.bat        # Windows用ラッパー（提出）
+```
 
-## 🛠 依存ツール
+## 依存ツール
+
 - WSL (Ubuntu推奨)
 - g++ (C++17以上)
 - Python 3

@@ -113,8 +113,7 @@ else
 fi
 
 echo "Ready in $TARGET_DIR"
-if command -v code >/dev/null; then
-    code -r -g "$FILE_TO_OPEN"
-else
-    echo "VS Code 'code' command not found. Please open $FILE_TO_OPEN manually."
-fi
+
+# Output the file path for the calling script (acx.bat) to open
+# Format: OPEN:<full_path>
+echo "OPEN:$TARGET_DIR/$FILE_TO_OPEN"
