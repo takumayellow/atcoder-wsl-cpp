@@ -1,0 +1,1 @@
+wsl python3 /mnt/c/Users/takum/Documents/atcoder/atcoder-wsl-cpp/patch_atcoder_ua.py
