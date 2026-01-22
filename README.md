@@ -44,7 +44,29 @@ cd /mnt/c/Users/takum/Documents/atcoder/atcoder-wsl-cpp
 # 依存ツールのインストールとテンプレート設定
 ./tools/setup_wsl.sh    # 初回のみ: acc, oj のインストール
 ./tools/setup_env.sh    # テンプレートの登録
+./tools/install_acx.sh  # acx/actest/acsub を PATH に追加
 ```
+
+### Step 2: AtCoderへのログイン
+
+### トラブルシューティング
+
+**「AtCoder says: × Error.」で提出できない場合**
+
+2024年以降、AtCoderのセキュリティ強化（Cloudflare Turnstile）により、`oj login` でのログインセッションでは提出が拒否される場合があります。
+この記事の手順（標準的な `oj login`）だけでは回避できないため、以下のワークアラウンドを実行してください。
+
+1. **ブラウザのCookieをエクスポート**:
+   PCのChrome等でAtCoderにログインした状態で、拡張機能「EditThisCookie」などを使い、CookieをJSON形式でクリップボードにコピーします。
+2. **cookie.jsonの作成**:
+   プロジェクトルート（`atcoder-wsl-cpp/`）に `cookie.json` という名前でファイルを保存し、JSONを貼り付けます。
+3. **Cookieの反映**:
+   以下のコマンドを実行して、WSL内の `oj` にCookieを適用します。
+   ```bash
+   ./tools/update_cookie.sh
+   ```
+4. **再提出**:
+   `acsub` を実行して提出できるか確認してください。
 
 ### Step 2: AtCoderへのログイン
 
@@ -183,7 +205,22 @@ actest
 acsub
 ```
 
-現在のディレクトリのコードをAtCoderに提出します（`acc submit` を実行）。
+現在のディレクトリのコードをAtCoderに提出します。
+
+**⚠️ 現在の制約 (Cloudflare Turnstile):**
+AtCoderのセキュリティ強化により、コマンドラインツール(`oj submit`)からの自動提出はブロックされ「× Error」となるケースがほとんどです。
+そのため、`acsub` は現在以下の動作を行います：
+
+1. 自動提出を試みる（成功すれば完了）
+2. **失敗時（Error発生時）:**
+   - コードをクリップボードに自動コピー (`clip.exe`)
+   - 該当問題の提出ページをブラウザで開く (`explorer.exe`)
+   - ユーザーは **Ctrl+V** で貼り付けて「提出」ボタンを押すだけ
+
+**提出言語のデフォルト:**
+- C++ は言語ID `6017`（C++23 GCC）を指定して submit します
+- Python は言語ID `6082`（CPython 3.13.7）を指定して submit します
+
 
 ---
 

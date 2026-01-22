@@ -1,7 +1,0 @@
-#LWP-Cookies-2.0
-Set-Cookie3: __pp_uid=C22kVo1tPtDpBwvyYAS6GQeSlULnf3zu; path="/"; domain=.atcoder.jp; path_spec; domain_dot; expires="2027-02-25 08:26:12Z"; HttpOnly=False; version=0
-Set-Cookie3: _ga=GA1.1.218302234.1768982090; path="/"; domain=.atcoder.jp; path_spec; domain_dot; expires="2027-02-25 08:26:12Z"; HttpOnly=False; version=0
-Set-Cookie3: _ga_RC512FD18N=GS2.1.s1768983967$o2$g1$t1768983972$j55$l0$h0; path="/"; domain=.atcoder.jp; path_spec; domain_dot; expires="2027-02-25 08:26:12Z"; HttpOnly=False; version=0
-Set-Cookie3: REVEL_FLASH=""; path="/"; domain=atcoder.jp; path_spec; secure; HttpOnly=True; version=0
-Set-Cookie3: REVEL_SESSION=d36f26c3291e2938dda0aa4429bfb29fd8f17a86-%00_TS%3A1784535973%00%00SessionKey%3A912fbe87ae17137e3f6acd0600bfc3c3da7ea9c7023493af6c7872335e5eef74%00%00UserScreenName%3Ayellowred%00%00UserName%3Ayellowred%00%00a%3Afalse%00%00w%3Afalse%00%00csrf_token%3AUcqHYQFtDvYijSzw4KE6f2uQeBr7eQ%2Foibaa%2Bwk3XN0%3D%00; path="/"; domain=atcoder.jp; path_spec; secure; expires="2026-07-20 08:26:12Z"; HttpOnly=True; version=0
-Set-Cookie3: timeDelta=-136; path="/"; domain=atcoder.jp; path_spec; expires="2026-01-21 08:54:50Z"; HttpOnly=False; version=0

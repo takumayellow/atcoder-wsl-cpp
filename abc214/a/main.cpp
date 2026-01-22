@@ -18,6 +18,5 @@ int main(){
     } else {
         cout << 8 << endl;
     }
-
     return 0;
 }

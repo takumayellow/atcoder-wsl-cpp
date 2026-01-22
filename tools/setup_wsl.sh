@@ -31,7 +31,7 @@ eval "$(pyenv init -)"
 pyenv install -s 3.10.14
 pyenv global 3.10.14
 python -m pip install --upgrade pip
-python -m pip install --user online-judge-tools
+python -m pip install --user -U online-judge-tools online-judge-api-client
 grep -q '\.local/bin' ~/.bashrc || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 export PATH="$HOME/.local/bin:$PATH"
 
