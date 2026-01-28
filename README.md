@@ -141,6 +141,31 @@ actest
 acsub
 ```
 
+### VS Code ショートカット（推奨）
+
+ターミナルを開かずに実行できて便利です。
+
+#### 1. タスクの自動実行
+- **テスト (`Ctrl` + `Shift` + `T`)**:  
+  現在開いているファイルをビルドし、自動的にサンプルケースのテストを実行します。
+
+- **提出 (`Alt` + `S`)**:  
+  現在開いているファイルを AtCoder に提出します。
+
+#### 2. ショートカットの設定方法
+提出コマンド (`Alt + S`) を有効にするには、VS Code でキー割り当てを追加してください。
+
+1. `Ctrl` + `Shift` + `P` → `Preferences: Open Keyboard Shortcuts (JSON)` を選択
+2. 以下を追記:
+   ```json
+    {
+        "key": "alt+s",
+        "command": "workbench.action.tasks.runTask",
+        "args": "S: Submit code (acsub)"
+    }
+   ```
+   ※ `Ctrl+Shift+T` はデフォルトの「テストタスクの実行」に割り当て済みです。
+
 ### エディタの自動検出
 
 `acx` コマンドは実行元の環境を自動検出します:

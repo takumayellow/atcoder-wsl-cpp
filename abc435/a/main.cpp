@@ -8,8 +8,10 @@ int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    
-
+    // write code here
+    int N;
+    cin >> N;
+    printf("%d\n", N*(N+1)/2);
     
     return 0;
 }

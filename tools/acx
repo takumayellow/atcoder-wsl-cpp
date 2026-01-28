@@ -5,8 +5,9 @@ set -e
 # Ensure acc and oj are in PATH for non-interactive shells
 export PATH="$HOME/.local/bin:$PATH"
 
-# Try to find acc in NVM directories if not found
-if ! command -v acc &> /dev/null; then
+# Try to find acc in NVM directories if not found or if found in /mnt (Windows path)
+ACC_PATH=$(command -v acc || true)
+if [[ -z "$ACC_PATH" ]] || [[ "$ACC_PATH" == /mnt/* ]]; then
     # Try to source NVM if available
     export NVM_DIR="$HOME/.nvm"
     if [ -s "$NVM_DIR/nvm.sh" ]; then
@@ -22,7 +23,8 @@ fi
 # --- PATH SETUP END ---
 
 # Detect Repo Root
-SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 REPO_ROOT=$(dirname "$SCRIPT_DIR")
 R="$REPO_ROOT"
 S="$HOME/.config/acx/last"
@@ -32,7 +34,7 @@ CID=${1:-}
 P=${2:-}
 TEMPLATE_OPT=""
 
-# Argument parsing helper
+# Argument parsing helpe
 # Check if any argument is "py" or "python" to set mode
 for arg in "$@"; do
     if [[ "$arg" == "py" || "$arg" == "python" ]]; then
