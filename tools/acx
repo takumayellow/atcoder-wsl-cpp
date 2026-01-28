@@ -76,9 +76,10 @@ cd "$R"
 if [ ! -d "$CID" ]; then
     echo "Creating contest workspace for $CID..."
     if [[ "$TEMPLATE_OPT" == "python" ]]; then
-        acc new "$CID" --template python
+        # Use default-choice all to skip interactive selection
+        acc new "$CID" --template python --choice all
     else
-        acc new "$CID" --template cpp
+        acc new "$CID" --template cpp --choice all
     fi
 fi
 
