@@ -30,6 +30,16 @@
 			"command": "wsl python3 /mnt/c/Users/takum/Documents/atcoder/atcoder-wsl-cpp/patch_atcoder_ua.py",
 			"isBackground": false,
 			"group": "test"
+		},
+		{
+			"label": "S: Submit code (acsub)",
+			"type": "shell",
+			"command": "wsl",
+			"args": [
+				"acsub"
+			],
+			"isBackground": false,
+			"group": "none"
 		}
 	]
 }
