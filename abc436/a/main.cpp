@@ -8,10 +8,14 @@ int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     
+    int n;
+    string s;
+    cin >> n >> s;
 
-    int N;
-    cin >> N;
-    printf("%d\n", N*(N+1)/2);
+    int pad = n - (int)s.length();
+    if (pad < 0) pad = 0;
+    for (int i = 0; i < pad; i++) putchar('o');
+    printf("%s\n", s.c_str());
     
     return 0;
 }
