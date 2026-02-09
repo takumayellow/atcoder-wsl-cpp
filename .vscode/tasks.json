@@ -4,13 +4,10 @@
 		{
 			"label": "C: Run tests (oj)",
 			"type": "shell",
-			"command": "powershell",
-			"args": [
-				"-NoProfile",
-				"-File",
-				"${workspaceFolder}\\.vscode\\run-oj.ps1",
-				"${fileDirname}"
-			],
+			"command": "${workspaceFolder}\\test.bat",
+			"options": {
+				"cwd": "${fileDirname}"
+			},
 			"group": {
 				"kind": "test",
 				"isDefault": true
