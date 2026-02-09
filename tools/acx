@@ -96,6 +96,9 @@ cd "$TARGET_DIR"
 # Save state
 echo "$CID" > "$S"
 
+# Output the target directory for the caller
+echo "CD:$TARGET_DIR"
+
 # Determine file to open
 FILE_TO_OPEN=""
 if [ -f "main.py" ]; then

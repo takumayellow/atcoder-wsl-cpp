@@ -48,8 +48,14 @@ if not defined EDITOR_CMD (
 
 REM Run WSL script and capture output
 set "FILE_TO_OPEN="
+set "DIR_TO_CD="
 for /f "tokens=*" %%i in ('wsl --exec bash -c "cd '%REPO_WSL%' && tools/acx %*"') do (
     set "LINE=%%i"
+    REM Check if this line starts with CD:
+    echo %%i | findstr /B "CD:" >nul
+    if !errorlevel! equ 0 (
+        set "DIR_TO_CD=%%i"
+    ) else (
     REM Check if this line starts with OPEN:
     echo %%i | findstr /B "OPEN:" >nul
     if !errorlevel! equ 0 (
@@ -57,6 +63,15 @@ for /f "tokens=*" %%i in ('wsl --exec bash -c "cd '%REPO_WSL%' && tools/acx %*"'
     ) else (
         echo %%i
     )
+    )
+)
+
+REM If we got a dir path, convert and store it for PowerShell wrapper use
+if defined DIR_TO_CD (
+    set "WSL_DIR=!DIR_TO_CD:CD:=!"
+    set "WIN_DIR=!WSL_DIR:/mnt/c/=C:\!"
+    set "WIN_DIR=!WIN_DIR:/=\!"
+    echo !WIN_DIR! > "%REPO_WIN%\.vscode\.acx_last_dir"
 )
 
 REM If we got a file path, convert and open it
