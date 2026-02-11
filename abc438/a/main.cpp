@@ -8,7 +8,12 @@ int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    // write code here
+    int d, f;
+    cin >> d >> f;
+
+    // Day numbers are cyclic in [1, 7].
+    int ans = (f - (d % 7) + 6) % 7 + 1;
+    printf("%d\n", ans);
     
     return 0;
 }
