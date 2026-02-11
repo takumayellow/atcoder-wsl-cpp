@@ -81,13 +81,8 @@ if defined FILE_TO_OPEN (
     set "WIN_PATH=!WSL_PATH:/mnt/c/=C:\!"
     set "WIN_PATH=!WIN_PATH:/=\!"
 
-    echo Opening: !WIN_PATH!
-
-    if defined EDITOR_CMD (
-        !EDITOR_CMD! -r -g "!WIN_PATH!"
-    ) else (
-        echo No editor found. Please open !WIN_PATH! manually.
-    )
+    REM Intentionally do not open editor from acx. Keep terminal-only behavior.
+    echo Target file: !WIN_PATH!
 )
 
 endlocal
