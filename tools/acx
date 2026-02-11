@@ -76,19 +76,22 @@ cd "$R"
 if [ ! -d "$CID" ]; then
     echo "Creating contest workspace for $CID..."
     if [[ "$TEMPLATE_OPT" == "python" ]]; then
-        # Use default-choice all to skip interactive selection
-        acc new "$CID" --template python --choice all
+        # Use default-choice all to skip interactive selection.
+        # Do not abort on failure; fall back to manual directory creation below.
+        if ! acc new "$CID" --template python --choice all; then
+            echo "Warning: acc new failed. Falling back to manual directory creation." >&2
+        fi
     else
-        acc new "$CID" --template cpp --choice all
+        if ! acc new "$CID" --template cpp --choice all; then
+            echo "Warning: acc new failed. Falling back to manual directory creation." >&2
+        fi
     fi
 fi
 
 TARGET_DIR="$R/$CID/$P"
 if [ ! -d "$TARGET_DIR" ]; then
-    echo "Directory $TARGET_DIR does not exist. Did acc new fail?"
-    # Try creating just this problem directory if acc failed to scaffold deep?
-    # Usually acc new creates everything.
-    exit 1
+    echo "Creating problem directory: $TARGET_DIR"
+    mkdir -p "$TARGET_DIR"
 fi
 
 cd "$TARGET_DIR"
