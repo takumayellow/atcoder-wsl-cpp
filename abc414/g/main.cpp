@@ -8,13 +8,7 @@ int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    string S;
-    cin >> S;
-    for (int i = 0; i < S.size() -1; i++) {
-    cout << S[i] << ' ';
-    }
-
-    cout << S[S.size()-1] << endl;
+    // write code here
     
     return 0;
 }
