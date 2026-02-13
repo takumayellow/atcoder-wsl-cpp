@@ -8,11 +8,9 @@ int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    int a, b, c;
-    cin >> a >> b >> c;
-    vector<int> v = {a, b, c};
-    sort(v.begin(), v.end());
-    cout << v[2] << v[1] << v[0] << "\n";
-    
+    int n;
+    string s;
+    cin >> n >> s;
+    printf("%s\n", s.substr(s.size() >=3 ? s.size()-3 : 0) == "tea" ? "Yes" : "No");
     return 0;
 }
