@@ -99,6 +99,14 @@ echo "$CID" > "$S"
 # Output the target directory for the caller
 echo "CD:$TARGET_DIR"
 
+# Remove placeholder lines from default templates if present.
+strip_cpp_placeholder() {
+    local file="$1"
+    [ -f "$file" ] || return 0
+    # Handle common variants: "// write code" and "// write code here"
+    sed -E -i '/^[[:space:]]*\/\/[[:space:]]*write[[:space:]]+code([[:space:]]+here)?[[:space:]]*$/Id' "$file"
+}
+
 # Determine file to open
 FILE_TO_OPEN=""
 if [ -f "main.py" ]; then
@@ -118,5 +126,8 @@ else
     # usually acc needs template.json to know what to submit.
 fi
 
-echo "Ready in $TARGET_DIR"
+if [ "$FILE_TO_OPEN" = "main.cpp" ]; then
+    strip_cpp_placeholder "main.cpp"
+fi
 
+echo "Ready in $TARGET_DIR"
