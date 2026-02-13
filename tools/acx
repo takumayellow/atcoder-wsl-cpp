@@ -103,8 +103,8 @@ echo "CD:$TARGET_DIR"
 strip_cpp_placeholder() {
     local file="$1"
     [ -f "$file" ] || return 0
-    # Handle common variants: "// write code" and "// write code here"
-    sed -E -i '/^[[:space:]]*\/\/[[:space:]]*write[[:space:]]+code([[:space:]]+here)?[[:space:]]*$/Id' "$file"
+    # Keep vertical spacing by replacing the placeholder line with an empty indented line.
+    sed -E -i 's/^[[:space:]]*\/\/[[:space:]]*write[[:space:]]+code([[:space:]]+here)?[[:space:]]*$/    /I' "$file"
 }
 
 # Determine file to open
