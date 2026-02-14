@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ABC303 B: x[j]-- 解説スライド</title>
+  <style>
+    :root {
+      --bg-a: #0f172a;
+      --bg-b: #1e293b;
+      --panel: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #f59e0b;
+      --accent-2: #0ea5e9;
+      --danger: #dc2626;
+      --ok: #16a34a;
+      --shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "BIZ UDPGothic", "Yu Gothic UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(245, 158, 11, 0.22), transparent 35%),
+        radial-gradient(circle at 90% 85%, rgba(14, 165, 233, 0.2), transparent 30%),
+        linear-gradient(145deg, var(--bg-a), var(--bg-b));
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .deck {
+      width: min(1100px, 100%);
+      height: min(700px, 88vh);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 18px;
+      backdrop-filter: blur(4px);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      background: var(--panel);
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      padding: 30px;
+      display: none;
+      overflow: auto;
+    }
+
+    .slide.active { display: block; }
+
+    h1, h2 { margin: 0 0 12px 0; line-height: 1.2; }
+    h1 { font-size: clamp(28px, 4.2vw, 44px); }
+    h2 { font-size: clamp(24px, 3.6vw, 34px); }
+    p, li {
+      font-size: clamp(16px, 2vw, 23px);
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .muted { color: var(--muted); }
+    .label {
+      display: inline-block;
+      font-size: 14px;
+      background: #fff7ed;
+      color: #b45309;
+      border: 1px solid #fdba74;
+      border-radius: 999px;
+      padding: 4px 12px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .index-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(80px, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .card {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      background: #f8fafc;
+    }
+
+    .card .k {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .card .v {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: "Consolas", "JetBrains Mono", monospace;
+    }
+
+    .arrow {
+      text-align: center;
+      font-size: 34px;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin: 6px 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .box {
+      border-radius: 12px;
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .ok { border-color: #86efac; background: #f0fdf4; }
+    .bad { border-color: #fca5a5; background: #fef2f2; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(15px, 1.8vw, 21px);
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th { background: #e2e8f0; }
+
+    .code {
+      font-family: "Consolas", "JetBrains Mono", monospace;
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 8px;
+      font-size: clamp(14px, 1.8vw, 20px);
+      white-space: pre-wrap;
+    }
+
+    .danger {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .ok-text {
+      color: var(--ok);
+      font-weight: 700;
+    }
+
+    .footer {
+      position: absolute;
+      right: 28px;
+      bottom: 18px;
+      font-size: 14px;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .controls {
+      position: absolute;
+      left: 28px;
+      bottom: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #0ea5e9;
+      color: white;
+    }
+
+    button:hover { filter: brightness(1.05); }
+
+    @media (max-width: 860px) {
+      .two-col { grid-template-columns: 1fr; }
+      .deck { height: min(760px, 94vh); }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide active">
+      <span class="label">ABC303 B / index変換</span>
+      <h1>`x[j]--` を図で理解する</h1>
+      <p>この資料は，「なぜ `x[j]--` が必要か」を，具体例で可視化します．</p>
+      <ul>
+        <li>入力は 1-index（1 から n）</li>
+        <li>C++ の配列添字は 0-index（0 から n-1）</li>
+        <li>このズレを埋めるのが `x[j]--`</li>
+      </ul>
+      <p class="muted">操作: 右左キー，または下の Prev/Next ボタン</p>
+      <div class="footer">1 / 6</div>
+    </section>
+
+    <section class="slide">
+      <span class="label">Step 1</span>
+      <h2>1-index と 0-index の対応</h2>
+      <p>問題文の人番号: <strong>1，2，3，4</strong> / 配列の添字: <strong>0，1，2，3</strong></p>
+
+      <div class="index-grid">
+        <div class="card"><div class="k">人番号 (入力)</div><div class="v">1</div></div>
+        <div class="card"><div class="k">人番号 (入力)</div><div class="v">2</div></div>
+        <div class="card"><div class="k">人番号 (入力)</div><div class="v">3</div></div>
+        <div class="card"><div class="k">人番号 (入力)</div><div class="v">4</div></div>
+      </div>
+      <div class="arrow">↓ それぞれ 1 引く（`--`）</div>
+      <div class="index-grid">
+        <div class="card"><div class="k">添字 (配列)</div><div class="v">0</div></div>
+        <div class="card"><div class="k">添字 (配列)</div><div class="v">1</div></div>
+        <div class="card"><div class="k">添字 (配列)</div><div class="v">2</div></div>
+        <div class="card"><div class="k">添字 (配列)</div><div class="v">3</div></div>
+      </div>
+      <div class="footer">2 / 6</div>
+    </section>
+
+    <section class="slide">
+      <span class="label">Step 2</span>
+      <h2>`x[j]--` は「j番目の値だけ」を 1 減らす</h2>
+
+      <div class="code">for (int j = 0; j &lt; n; j++) {
+    cin &gt;&gt; x[j];   // 例: 1 3 2 4
+    x[j]--;        // 各要素を 1 減らして 0-index にする
+}</div>
+
+      <table>
+        <tr><th>j</th><th>読み込んだ x[j]</th><th>実行後 x[j]</th></tr>
+        <tr><td>0</td><td>1</td><td>0</td></tr>
+        <tr><td>1</td><td>3</td><td>2</td></tr>
+        <tr><td>2</td><td>2</td><td>1</td></tr>
+        <tr><td>3</td><td>4</td><td>3</td></tr>
+      </table>
+
+      <p>最終的に `x = [0, 2, 1, 3]` になります．</p>
+      <div class="footer">3 / 6</div>
+    </section>
+
+    <section class="slide">
+      <span class="label">Step 3</span>
+      <h2>なぜ必要か: `adjacent[a][b]` は 0-index で参照するため</h2>
+      <div class="two-col">
+        <div class="box ok">
+          <p class="ok-text">変換あり（正しい）</p>
+          <p>`x = [0,2,1,3]` なら，隣接ペアは (0,2)，(2,1)，(1,3)</p>
+          <p>`adjacent[0][2] = true` など，範囲 0..3 内で安全</p>
+        </div>
+        <div class="box bad">
+          <p class="danger">変換なし（危険）</p>
+          <p>`x = [1,3,2,4]` のまま使うと `adjacent[2][4]` などが発生</p>
+          <p>`n=4` の配列に index 4 は <span class="danger">範囲外</span></p>
+        </div>
+      </div>
+      <div class="footer">4 / 6</div>
+    </section>
+
+    <section class="slide">
+      <span class="label">Step 4</span>
+      <h2>「配列で入力したら 1-index になる」わけではない</h2>
+      <ul>
+        <li>1-index / 0-index は，<strong>入力仕様</strong>で決まります．</li>
+        <li>C++ の `vector` 添字は常に 0-index です．</li>
+        <li>入力が 1..n なら `-1` 変換が必要，入力が 0..n-1 なら不要です．</li>
+      </ul>
+      <div class="code">// 入力仕様が 0-index の場合
+cin >> x[j];
+// x[j]--; は不要</div>
+      <div class="footer">5 / 6</div>
+    </section>
+
+    <section class="slide">
+      <span class="label">Check</span>
+      <h2>最終チェック問題</h2>
+      <p><strong>Q.</strong> `n=5`，入力が `2 5 1 4 3` のとき，`x[j]--` 後の配列は？</p>
+      <p><strong>A.</strong> `1 4 0 3 2`</p>
+      <p>この状態なら `adjacent[a][b]` の `a,b` はすべて `0..4` に収まります．</p>
+      <div class="code">覚えることは 1 行だけ:
+「入力が 1-index なら，配列に入れる前後で 0-index に合わせる」</div>
+      <div class="footer">6 / 6</div>
+    </section>
+
+    <div class="controls">
+      <button id="prev">Prev</button>
+      <button id="next">Next</button>
+    </div>
+  </main>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const footers = Array.from(document.querySelectorAll('.footer'));
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    let idx = 0;
+
+    function render() {
+      slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+      footers.forEach((f, i) => {
+        if (i === idx) f.textContent = `${i + 1} / ${slides.length}`;
+      });
+    }
+
+    function move(delta) {
+      idx += delta;
+      if (idx < 0) idx = 0;
+      if (idx >= slides.length) idx = slides.length - 1;
+      render();
+    }
+
+    prev.addEventListener('click', () => move(-1));
+    next.addEventListener('click', () => move(1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') move(1);
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') move(-1);
+    });
+
+    render();
+  </script>
+</body>
+</html>

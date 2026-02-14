@@ -1,0 +1,15 @@
+\frametitle{よくある誤解}
+\textbf{「配列に入れたから 1-index になる」わけではありません．}
+
+  \begin{itemize}
+    \item 1-index / 0-index は \textbf{入力仕様} で決まる．
+    \item C++ の \texttt{vector} 添字は常に 0-index．
+    \item 入力が \texttt{1..n} なら \texttt{-1} 変換が必要．
+    \item 入力が最初から \texttt{0..n-1} なら不要．
+  \end{itemize}
+
+\begin{verbatim}
+// 入力仕様が0-indexの問題なら
+cin >> x[j];
+// x[j]--; は不要
+\end{verbatim}
