@@ -1,0 +1,128 @@
+\documentclass[dvipdfmx,aspectratio=169]{beamer}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{pxjahyper}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+\title{ABC303 B\\\small \texttt{x[j]--} を図で理解する}
+\author{}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{この資料のゴール}
+  \begin{itemize}
+    \item 入力が 1-index，配列添字が 0-index というズレを理解する．
+    \item \texttt{x[j]--} が何をしているかを具体例で理解する．
+    \item なぜ変換しないと危険か（範囲外アクセス）を理解する．
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{1-index と 0-index の対応}
+  問題文の人番号（1-index）と，配列添字（0-index）は次のように対応します．
+
+  \vspace{0.6em}
+  \begin{center}
+    \begin{tabular}{ccccc}
+      \toprule
+      人番号（入力） & 1 & 2 & 3 & 4 \\
+      \midrule
+      添字（配列） & 0 & 1 & 2 & 3 \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+
+  \vspace{0.6em}
+  つまり「各値を 1 減らす」と対応が取れます．
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{x[j]--} は j 番目の値だけを 1 減らす}
+\begin{verbatim}
+for (int j = 0; j < n; j++) {
+    cin >> x[j];   // 例: 1 3 2 4
+    x[j]--;        // 各要素を1減らして0-index化
+}
+\end{verbatim}
+
+  例として，入力が \texttt{1 3 2 4} の場合:
+
+  \begin{center}
+    \begin{tabular}{cccc}
+      \toprule
+      j & 読み込み直後 x[j] & \texttt{x[j]--} 後 x[j] & 備考 \\
+      \midrule
+      0 & 1 & 0 & 1番の人 $\rightarrow$ 添字0 \\
+      1 & 3 & 2 & 3番の人 $\rightarrow$ 添字2 \\
+      2 & 2 & 1 & 2番の人 $\rightarrow$ 添字1 \\
+      3 & 4 & 3 & 4番の人 $\rightarrow$ 添字3 \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+
+  最終的に \texttt{x = [0, 2, 1, 3]} になります．
+\end{frame}
+
+\begin{frame}[fragile]{なぜ必要か: \texttt{adjacent[a][b]} は 0-index 前提}
+\begin{columns}[T,onlytextwidth]
+  \column{0.48\textwidth}
+  \textbf{変換あり（正しい）}
+  \begin{itemize}
+    \item \texttt{x = [0,2,1,3]}
+    \item 隣接ペア:
+    \texttt{(0,2), (2,1), (1,3)}
+    \item \texttt{adjacent[a][b]} の $a,b$ は
+    すべて \texttt{0..n-1} に収まる．
+  \end{itemize}
+
+  \column{0.48\textwidth}
+  \textbf{変換なし（危険）}
+  \begin{itemize}
+    \item \texttt{x = [1,3,2,4]} のまま
+    \item 例えば \texttt{adjacent[2][4]} が出る
+    \item \texttt{n=4} なら有効添字は \texttt{0..3}
+    \item \texttt{4} は範囲外アクセス．
+  \end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{よくある誤解}
+  \textbf{「配列に入れたから 1-index になる」わけではありません．}
+
+  \begin{itemize}
+    \item 1-index / 0-index は \textbf{入力仕様} で決まる．
+    \item C++ の \texttt{vector} 添字は常に 0-index．
+    \item 入力が \texttt{1..n} なら \texttt{-1} 変換が必要．
+    \item 入力が最初から \texttt{0..n-1} なら不要．
+  \end{itemize}
+
+\begin{verbatim}
+// 入力仕様が0-indexの問題なら
+cin >> x[j];
+// x[j]--; は不要
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{確認問題}
+  \textbf{Q.} \texttt{n=5}，入力が \texttt{2 5 1 4 3} のとき，
+  \texttt{x[j]--} 後の配列は？
+
+  \vspace{1em}
+  \textbf{A.} \texttt{1 4 0 3 2}
+
+  \vspace{1em}
+  これで \texttt{adjacent[a][b]} の添字は常に \texttt{0..4} に収まります．
+
+  \vspace{1.2em}
+  \begin{block}{覚えることは 1 行}
+    入力が 1-index なら，配列で使う前に 0-index に合わせる．
+  \end{block}
+\end{frame}
+
+\end{document}
