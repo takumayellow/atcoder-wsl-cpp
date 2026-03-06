@@ -1,0 +1,82 @@
+\usepackage{luatexja}
+\usepackage[hiragino-pro,hiragino-pron]{luatexja-preset}
+\usepackage{luatexja-fontspec}
+\usepackage{fontspec}
+\usepackage[margin=22mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fancyvrb}
+\usepackage{framed}
+\usepackage{titlesec}
+
+\linespread{1.1}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlist[itemize]{leftmargin=2em, itemsep=0.25em, topsep=0.25em}
+
+\definecolor{ProblemAccent}{HTML}{000000}
+\definecolor{ProblemAccentDark}{HTML}{000000}
+\definecolor{ProblemMetaBg}{HTML}{F8FAFC}
+\definecolor{ProblemRule}{HTML}{D1D5DB}
+\definecolor{ProblemCodeBg}{HTML}{F8FAFC}
+\definecolor{ProblemCodeRule}{HTML}{000000}
+\titleformat{name=\section,numberless}
+  {\normalfont\LARGE\bfseries\color{ProblemAccentDark}}
+  {}
+  {0pt}
+  {}
+[\vspace{0.2em}{\color{ProblemRule}\rule{\linewidth}{0.6pt}}\normalcolor]
+
+\titleformat{name=\subsection,numberless}
+  {\normalfont\large\bfseries\color{ProblemAccentDark}}
+  {}
+  {0pt}
+  {}
+[\vspace{0.15em}{\color{ProblemRule}\rule{\linewidth}{0.4pt}}\normalcolor]
+
+\titlespacing*{\section}{0pt}{-0.6ex}{0.8ex}
+\titlespacing*{\subsection}{0pt}{0.2ex}{0.35ex}
+
+\def\FrameCommand{%
+  {\color{ProblemRule}\vrule width 1.0pt}%
+  \hspace{0pt}%
+  \fcolorbox{ProblemRule}{ProblemMetaBg}%
+}
+\newenvironment{problemmeta}{%
+  \vspace{0.05em}\begingroup\MakeFramed{\advance\hsize-\width\FrameRestore}\noindent\small\color{black}
+}{%
+  \endMakeFramed\endgroup\vspace{0.3em}
+}
+
+\AtBeginDocument{\color{black}}
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmainjfont{Hiragino Mincho ProN}
+\setsansjfont{Hiragino Sans W6}
+
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{
+  fontsize=\small,
+  frame=single,
+  framerule=0.5pt,
+  rulecolor=\color{ProblemCodeRule},
+  framesep=7pt,
+  baselinestretch=1,
+  xleftmargin=0.3em,
+  xrightmargin=0.3em,
+  formatcom=\color{black},
+  fillcolor=\color{ProblemCodeBg}
+}
+
+\fvset{
+  fontsize=\small,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{ProblemRule},
+  framesep=6pt,
+  baselinestretch=1,
+  xleftmargin=0.5em,
+  xrightmargin=0.5em,
+  formatcom=\color{black},
+  fillcolor=\color{ProblemCodeBg}
+}

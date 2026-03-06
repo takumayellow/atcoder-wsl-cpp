@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "name": "macOS",
+      "compilerPath": "/opt/homebrew/opt/gcc/bin/g++-15",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "macos-gcc-arm64",
+      "compilerArgs": [
+        "-std=gnu++17",
+        "-isysroot",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+      ],
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/opt/homebrew/opt/gcc/include/c++/15",
+        "/opt/homebrew/opt/gcc/include/c++/15/aarch64-apple-darwin25",
+        "/opt/homebrew/opt/gcc/include/c++/15/backward",
+        "/opt/homebrew/opt/gcc/lib/gcc/current/gcc/aarch64-apple-darwin25/15/include",
+        "/opt/homebrew/opt/gcc/lib/gcc/current/gcc/aarch64-apple-darwin25/15/include-fixed",
+        "/Users/uenoyuuta/atcoder-wsl-cpp/ac-library",
+        "/Users/uenoyuuta/atcoder-wsl-cpp/ac-library/atcoder"
+      ],
+      "browse": {
+        "path": [
+          "${workspaceFolder}/**",
+          "/Users/uenoyuuta/atcoder-wsl-cpp/ac-library"
+        ],
+        "limitSymbolsToIncludedHeaders": true
+      }
+    }
+  ],
+  "version": 4
+}
