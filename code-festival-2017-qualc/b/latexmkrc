@@ -1,0 +1,8 @@
+$latex = 'platex -interaction=nonstopmode -file-line-error %O %S';
+$bibtex = 'pbibtex %O %S';
+$dvipdf = 'dvipdfmx %O -o %D %S';
+$pdf_mode = 3;
+$max_repeat = 5;
+
+# Keep PDF but clean typical intermediate files on `latexmk -c`.
+$clean_ext = 'aux bbl blg dvi fls fdb_latexmk log nav out snm toc vrb';
