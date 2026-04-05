@@ -1,0 +1,169 @@
+\documentclass[dvipdfmx,aspectratio=169]{beamer}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{pxjahyper}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+\title{CODE FESTIVAL 2017 qual C -- B\\\small Similar Arrays の解説}
+\author{}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{問題の概要}
+  \begin{itemize}
+    \item 長さ $N$ の数列 $A$ が与えられる．
+    \item 各 $i$ について $|b_i - A_i| \le 1$ を満たす数列 $b$ を考える．
+    \item $b_1 \times b_2 \times \cdots \times b_N$ が\textbf{偶数}になる $b$ の個数を求めよ．
+  \end{itemize}
+
+  \vspace{1em}
+  \textbf{制約}: $1 \le N \le 10$，$1 \le A_i \le 100$
+\end{frame}
+
+\begin{frame}{各位置の選択肢}
+  $b_i$ は $\{A_i - 1,\; A_i,\; A_i + 1\}$ の \textbf{3 通り}．
+
+  \vspace{0.8em}
+  この 3 つの偶奇は $A_i$ の偶奇で決まる:
+
+  \vspace{0.6em}
+  \begin{center}
+    \begin{tabular}{ccccc}
+      \toprule
+      $A_i$ の偶奇 & $A_i - 1$ & $A_i$ & $A_i + 1$ & 奇数は何個？ \\
+      \midrule
+      偶数 & 奇 & 偶 & 奇 & \textbf{2 個} \\
+      奇数 & 偶 & 奇 & 偶 & \textbf{1 個} \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+
+  \vspace{0.6em}
+  \begin{block}{ポイント}
+    偶数の周りは「奇・偶・奇」，奇数の周りは「偶・奇・偶」．\\
+    連続する 3 整数では偶奇が交互になるため．
+  \end{block}
+\end{frame}
+
+\begin{frame}{余事象で数える}
+  積が偶数 $=$ 全体 $-$ 積が奇数
+
+  \vspace{0.8em}
+  積が奇数 $\Longleftrightarrow$ \textbf{すべての $b_i$ が奇数}
+
+  \vspace{0.8em}
+  全体の数列数: 各位置 3 通りなので $3^N$
+
+  \vspace{0.8em}
+  すべて奇数になる数列数:
+  各位置の「奇数の選択肢の数」を掛け合わせる
+  \[
+    \prod_{i=1}^{N} (\text{位置 } i \text{ の奇数の選択肢数})
+  \]
+\end{frame}
+
+\begin{frame}{奇数の選択肢数を整理する}
+  前のスライドの表から:
+  \begin{itemize}
+    \item $A_i$ が\textbf{偶数}のとき → 奇数の選択肢は \textbf{2} 個
+    \item $A_i$ が\textbf{奇数}のとき → 奇数の選択肢は \textbf{1} 個
+  \end{itemize}
+
+  \vspace{0.8em}
+  $A$ の中の偶数の個数を $m$ とすると:
+  \[
+    \text{すべて奇数の数列数} = 2^m \times 1^{N-m} = 2^m
+  \]
+
+  \vspace{0.8em}
+  \begin{alertblock}{答え}
+    \[
+      3^N - 2^m
+    \]
+    ただし $m = $ ($A$ の中の偶数の個数)
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{具体例: $N=3$, $A = (3, 4, 5)$}
+  \begin{itemize}
+    \item $A_1 = 3$（奇数）→ 奇数の選択肢: $\{3\}$ → \textbf{1 個}
+    \item $A_2 = 4$（偶数）→ 奇数の選択肢: $\{3, 5\}$ → \textbf{2 個}
+    \item $A_3 = 5$（奇数）→ 奇数の選択肢: $\{5\}$ → \textbf{1 個}
+  \end{itemize}
+
+  \vspace{0.8em}
+  偶数の個数 $m = 1$
+
+  \vspace{0.5em}
+  \[
+    \text{全体} = 3^3 = 27, \quad \text{全部奇数} = 2^1 = 2
+  \]
+  \[
+    \text{答え} = 27 - 2 = 25
+  \]
+\end{frame}
+
+\begin{frame}[fragile]{コード}
+\begin{verbatim}
+int n;
+cin >> n;
+vector<int> a(n);
+int m = 0;  // 偶数の個数
+for (int i = 0; i < n; i++) cin >> a[i];
+for (int i = 0; i < n; i++) {
+    if (a[i] % 2 == 0) m++;
+}
+ll total = 1;
+for (int i = 0; i < n; i++) total *= 3;   // 3^N
+ll all_odd = 1;
+for (int i = 0; i < m; i++) all_odd *= 2;  // 2^m
+cout << total - all_odd << endl;
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{なぜ \texttt{pow} を避けるか}
+  \texttt{pow(3, n)} は \texttt{double} を返す．
+
+  \vspace{0.6em}
+  \begin{itemize}
+    \item \texttt{double} は 15--16 桁程度の精度しかない．
+    \item 例: \texttt{pow(3, 10)} が \texttt{59049.0000000001} になる可能性．
+    \item \texttt{cout} に渡すと \texttt{59049} 以外が出力されうる．
+  \end{itemize}
+
+  \vspace{0.8em}
+  この問題では $N \le 10$ なので実際はほぼ問題ないが，
+  競プロでは整数演算で書くのが安全な習慣．
+
+  \vspace{0.6em}
+  \begin{block}{代替策}
+    \begin{itemize}
+      \item ループで掛け算（今回のコード）
+      \item \texttt{(ll)pow(3, n)} とキャスト
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{まとめ}
+  \begin{enumerate}
+    \item 余事象：積が偶数 $=$ 全体 $-$ 全部奇数
+    \item 各位置の奇数選択肢数は $A_i$ の偶奇で決まる
+    \item 偶数の $A_i$ が $m$ 個なら，答えは $3^N - 2^m$
+  \end{enumerate}
+
+  \vspace{1em}
+  \begin{block}{覚えること}
+    「積が偶数」$\Leftrightarrow$「少なくとも 1 つ偶数」\\
+    → 余事象「全部奇数」を引くのが定石．
+  \end{block}
+\end{frame}
+
+\end{document}
