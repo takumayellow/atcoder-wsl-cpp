@@ -1,0 +1,128 @@
+\documentclass[a4paper,11pt]{ltjsarticle}
+\usepackage{luatexja}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=25mm]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single}
+
+\title{AtCoder 問題メモ}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%% ===========================================
+%% Problem 1: C - Dislike Foods
+%% ===========================================
+\section{C -- Dislike Foods}
+\begin{flushright}
+\textit{2025年4月19日 21:44}
+\end{flushright}
+
+\subsection{問題設定}
+
+AtCoder Restaurant の問題。
+
+\begin{itemize}
+  \item 食材 (food) が $1, 2, 3, \ldots, N$ 種類ある。
+  \item 各食材に対して好き・嫌いがある（全部好き、とは限らない）。
+  \item 料理は $1, 2, \ldots, M$ 個ある。
+  \item 各料理は複数の食材を含む。嫌いな食材が1個でも入っていたらその料理は食べられない（$\times$）。
+\end{itemize}
+
+\subsection{変数の定義}
+
+\begin{itemize}
+  \item $N$：食材の個数
+  \item $K_i$：$i$ 番目の嫌いな食材に対応する料理の個数
+  \item $A_{i,1}, A_{i,2}, \ldots, A_{i,K_i}$：嫌いな食材 $i$ が含まれる料理の番号
+  \item $K_M$：全体の料理数に関する制約
+  \item $B_1, B_2, \ldots, B_N$：1日目に0になる食材
+\end{itemize}
+
+\subsection{アルゴリズムの考え方}
+
+\begin{enumerate}
+  \item 1日目について：$B_1$ は 0 になる。
+  \item 料理の個数 $\Rightarrow$ 各日の料理をカウントする。
+\end{enumerate}
+
+\subsection{擬似コード}
+
+\begin{lstlisting}[language=Python]
+for i in range(...):
+    # B[i] を 0 にする処理
+    # 各料理について嫌いな食材を含むかチェック
+\end{lstlisting}
+
+\newpage
+
+%% ===========================================
+%% Problem 2: D - Make 2-Regular Graph
+%% ===========================================
+\section{D -- Make 2-Regular Graph}
+\begin{flushright}
+\textit{2025年8月5日 23:54}
+\end{flushright}
+
+\subsection{問題設定}
+
+グラフ $G$ が与えられる。
+\begin{itemize}
+  \item 頂点 (node) 数：$N$
+  \item 辺 (edge) 数：$M$
+  \item 辺 $e_i$：頂点 $A_i$ と $B_i$ を結ぶ（無向グラフ）。
+  \item $G$ に1つの辺を「追加」または「削除」する操作を繰り返し、2-正則グラフにしたい。
+\end{itemize}
+
+\subsection{2-正則グラフの性質}
+
+\begin{itemize}
+  \item 2-正則グラフの定義：
+    \[
+      \forall\, a \in G,\quad \deg(a) = 2
+    \]
+  \item すべての頂点の次数が2であるとき、グラフはサイクルグラフの和集合（disjoint union of cycles）になる。
+    \[
+      \Leftarrow\quad \text{すべての連結成分が巡回グラフ (cyclic graph) である}
+    \]
+  \item グラフが単純グラフ (simple graph) であるため、各サイクルグラフの頂点数は3以上である。
+\end{itemize}
+
+\subsection{解法の考察}
+
+制約 $N \leq 8$ より、連結成分の数は1つまたは2つである。
+
+さらに、操作回数の最小値は、最初のグラフと最終的なグラフの片方にのみ存在する辺を数えることで求められる。
+
+したがって、やるべきことは「実現可能と推測できるすべてのグラフを列挙する」ことである。
+
+\subsubsection{場合分け}
+
+連結成分の数が1つの場合と2つの場合に分けて考える。
+
+\paragraph{(1) 連結成分が1つの場合}
+
+全頂点で1つのサイクルを構成する。総当たり（brute force）で、頂点 $P_1, P_2, \ldots, P_N$ を巡回的に並べたグラフを考える。すなわち、$P_i$ と $P_{i+1}$ を辺で結び、$P_{N+1} = P_1$ と定義する。
+
+$P_1 = 1$ の場合のみ考えれば十分であるが、すべての順列を探索しても制約が十分小さいため高速に動作する。
+
+\paragraph{(2) 連結成分が2つの場合}
+
+全頂点を2つの連結成分に分割し、それぞれについて (1) と同様の処理を行う。
+
+具体的には、全頂点を前半 $d$ 個と後半 $N - d$ 個に分ける方法をすべて試し、それぞれをサイクルグラフにする。分割の仕方についても全探索で十分高速である。各部分について (1) と同じ規則で定義されるサイクルを構成すればよい。
+
+\subsection{計算量}
+
+$N \leq 8$ であるため、順列の全探索 ($O(N!)$) を行っても十分高速である。
+連結成分が2つの場合も、分割方法 $\times$ 各部分の順列で計算可能。
+
+\end{document}
