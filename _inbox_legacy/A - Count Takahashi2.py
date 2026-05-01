@@ -1,0 +1,1 @@
+print(sum(input() == "Takahashi" for _ in range(int(input()))))

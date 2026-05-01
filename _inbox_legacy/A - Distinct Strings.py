@@ -1,0 +1,18 @@
+a,b,c=input()
+if a==b==c:print(1)
+elif a==b:print(3)
+elif c==b:print(3)
+elif a==c:print(3)
+else:print(6)
+
+s,t,u=sorted(input())
+if s==t==u:print(1)
+elif s==t:print(3)
+elif t==u:print(3)
+else:print(6)
+
+s,t,u=sorted(input())
+if s<t<u:print(6)
+elif s<t:print(3)
+elif t<u:print(3)
+else:print(1)

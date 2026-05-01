@@ -1,0 +1,1 @@
+print('YNeos'[len({*input()})%2!=1::2])

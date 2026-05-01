@@ -1,0 +1,1 @@
+print(("oox"*34)[:int(input())])

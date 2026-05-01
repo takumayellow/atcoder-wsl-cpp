@@ -1,0 +1,1 @@
+print(str(float(input())).rstrip('0').rstrip('.'))

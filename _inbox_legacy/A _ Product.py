@@ -1,0 +1,1 @@
+print('OEdvde n'['0'in(s:=input())or'4'in s::2])

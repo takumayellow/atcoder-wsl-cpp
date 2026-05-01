@@ -1,0 +1,1 @@
+from datetime import date;y=int(input());print((date(y+1,1,1)-date(y,1,1)).days)

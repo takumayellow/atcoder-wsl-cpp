@@ -1,0 +1,1 @@
+print(max(map(eval,map('+'.join,input().split()))))

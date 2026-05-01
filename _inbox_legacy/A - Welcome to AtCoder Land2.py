@@ -1,0 +1,1 @@
+print("NYoe s"["Coder L"in input()::2])

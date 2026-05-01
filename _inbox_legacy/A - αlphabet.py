@@ -1,0 +1,1 @@
+print("Aa"[ord(str(input()))>90])

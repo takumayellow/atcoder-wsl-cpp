@@ -1,0 +1,1 @@
+a=1;print(*[a*(a:=int(b))for b in[*open(0)][1].split()][1:])

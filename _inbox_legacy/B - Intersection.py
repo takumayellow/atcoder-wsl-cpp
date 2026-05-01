@@ -1,0 +1,5 @@
+n=int(input())
+a=list(map(int,input().split()))
+b=list(map(int,input().split()))
+if min(b)-max(a)<0:print(0)
+else: print(min(b)-max(a)+1)

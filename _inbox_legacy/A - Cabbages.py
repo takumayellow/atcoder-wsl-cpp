@@ -1,0 +1,5 @@
+n,a,x,y=map(int,input().split())
+# if n<a:print(n*x)
+# else:print(a*x+(n-a)*y)
+# print(n*x*(n<a)+(a*x+(n-a)*y)*(n>=a))
+print((x-y)*min(n,a)+y*n)

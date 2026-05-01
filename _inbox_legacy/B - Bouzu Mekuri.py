@@ -1,0 +1,1 @@
+_=input();print('TAaokkaih a s h i'[input().index("1")%2::2])
