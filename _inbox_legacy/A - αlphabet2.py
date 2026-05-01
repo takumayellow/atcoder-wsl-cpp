@@ -1,0 +1,1 @@
+print("Aa"[input()in"abcdefghijklmnopqrstuvwxyz"])

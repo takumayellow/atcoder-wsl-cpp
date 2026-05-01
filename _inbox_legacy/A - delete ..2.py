@@ -1,0 +1,1 @@
+for c in input():print(c,end="")if c!="."else""

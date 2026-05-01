@@ -1,0 +1,1 @@
+print('NYoe s'['00'in input()::2])

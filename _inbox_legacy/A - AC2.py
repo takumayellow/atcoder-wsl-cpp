@@ -1,0 +1,1 @@
+A,x,C=input();print(A +"R"+C)if x=="B"else print(A+"B"+C)

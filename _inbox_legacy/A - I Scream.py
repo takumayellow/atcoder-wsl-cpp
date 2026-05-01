@@ -1,0 +1,2 @@
+a, b = map(int, input().split())
+print(4 - (a + b >= 15 and b >= 8) * 3 + ((a + b >= 15 and b >= 8) - (a + b >= 10 and b >= 3)) * 1 - (a + b >= 10 and b >= 3) * 2 - (a + b >= 3) * (not (a + b >= 15 and b >= 8)))

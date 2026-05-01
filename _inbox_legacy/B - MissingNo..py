@@ -1,0 +1,5 @@
+n=int(input())
+a=set(map(int,input().split()))
+l=set(i for i in range(min(a),max(a)+1))
+if len(a)!=len(l):print(*(l-a))
+else:print(max(a)+1)

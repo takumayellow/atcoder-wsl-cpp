@@ -1,0 +1,1 @@
+print(f'AGC{int(input())*43//42:03}')
