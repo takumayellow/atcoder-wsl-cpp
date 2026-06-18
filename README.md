@@ -39,7 +39,7 @@ WSLターミナルで以下を実行:
 
 ```bash
 # リポジトリのルートに移動
-cd /mnt/c/Users/takum/Documents/atcoder/atcoder-wsl-cpp
+cd /mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp
 
 # 依存ツールのインストールとテンプレート設定
 ./tools/setup_wsl.sh    # 初回のみ: acc, oj のインストール
@@ -102,7 +102,7 @@ notepad $PROFILE
 
 ```powershell
 # ========== AtCoder Tools ==========
-$ACX_ROOT = "C:\Users\takum\Documents\atcoder\atcoder-wsl-cpp"
+$ACX_ROOT = "C:\Users\takum\dev\atcoder\atcoder-wsl-cpp"
 
 function Invoke-Acx {
     & "$ACX_ROOT\acx.bat" @args
@@ -139,7 +139,7 @@ acx abc231 a
 # 2. コードを書く（main.cpp を編集）
 
 # 3. 問題ディレクトリに移動
-cd C:\Users\takum\Documents\atcoder\atcoder-wsl-cpp\abc231\a
+cd C:\Users\takum\dev\atcoder\atcoder-wsl-cpp\abc231\a
 
 # 4. サンプルケースでテスト
 actest
@@ -263,14 +263,14 @@ AtCoderのセキュリティ強化により、コマンドラインツール(`oj
 ```powershell
 # 1. 問題を開く
 PS> acx abc231 a
-Ready in /mnt/c/Users/takum/Documents/atcoder/atcoder-wsl-cpp/abc231/a
-Opening: C:\Users\takum\Documents\atcoder\atcoder-wsl-cpp\abc231\a\main.cpp
+Ready in /mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp/abc231/a
+Opening: C:\Users\takum\dev\atcoder\atcoder-wsl-cpp\abc231\a\main.cpp
 
 # 2. エディタで main.cpp を編集
 #    （自動で開かれる）
 
 # 3. 問題ディレクトリに移動
-PS> cd C:\Users\takum\Documents\atcoder\atcoder-wsl-cpp\abc231\a
+PS> cd C:\Users\takum\dev\atcoder\atcoder-wsl-cpp\abc231\a
 
 # 4. テスト
 PS> actest
@@ -287,7 +287,7 @@ PS> acsub
 
 ```powershell
 acx abc231 a py
-cd C:\Users\takum\Documents\atcoder\atcoder-wsl-cpp\abc231\a
+cd C:\Users\takum\dev\atcoder\atcoder-wsl-cpp\abc231\a
 # main.py を編集
 actest
 acsub
@@ -346,7 +346,7 @@ PowerShellプロファイルが読み込まれていません:
 または、直接batファイルを実行:
 
 ```powershell
-C:\Users\takum\Documents\atcoder\atcoder-wsl-cpp\acx.bat abc231 a
+C:\Users\takum\dev\atcoder\atcoder-wsl-cpp\acx.bat abc231 a
 ```
 
 ### `acc: command not found`

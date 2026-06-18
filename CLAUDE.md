@@ -10,7 +10,7 @@ Create `~/.bash_aliases` with this function:
 
 ```bash
 acx() {
-  local repo="$HOME/Documents/atcoder/atcoder-wsl-cpp"
+  local repo="/mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp"
   local script="$repo/tools/acx"
 
   if [[ ! -x "$script" ]]; then
