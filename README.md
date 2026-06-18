@@ -47,40 +47,47 @@ cd /mnt/c/Users/takum/Documents/atcoder/atcoder-wsl-cpp
 ./tools/install_acx.sh  # acx/actest/acsub を PATH に追加
 ```
 
-### Step 2: AtCoderへのログイン
+### Step 2: AtCoderへのログイン（Cookieコピー方式が正攻法）
 
-### トラブルシューティング
+> **重要**: 2024年以降、AtCoder は Cloudflare Turnstile によるセキュリティ強化を導入しており、
+> **`oj login` / `acc login` の対話ログイン（ユーザー名・パスワード入力）は弾かれます**。
+> ユーザー名・パスワードが正しくても失敗するので、これは**正常な挙動**です。
+> 代わりに、ブラウザでログイン済みの Cookie を `oj` と `acc` の両方へ流し込みます。
 
-**「AtCoder says: × Error.」で提出できない場合**
+**手順:**
 
-2024年以降、AtCoderのセキュリティ強化（Cloudflare Turnstile）により、`oj login` でのログインセッションでは提出が拒否される場合があります。
-この記事の手順（標準的な `oj login`）だけでは回避できないため、以下のワークアラウンドを実行してください。
+1. **ブラウザでAtCoderにログイン**
+   PCのChrome等で https://atcoder.jp/ にログインしておきます。
 
-1. **ブラウザのCookieをエクスポート**:
-   PCのChrome等でAtCoderにログインした状態で、拡張機能「EditThisCookie」などを使い、CookieをJSON形式でクリップボードにコピーします。
-2. **cookie.jsonの作成**:
-   プロジェクトルート（`atcoder-wsl-cpp/`）に `cookie.json` という名前でファイルを保存し、JSONを貼り付けます。
-3. **Cookieの反映**:
-   以下のコマンドを実行して、WSL内の `oj` にCookieを適用します。
+2. **Cookieをエクスポート**
+   拡張機能「EditThisCookie」などで、`atcoder.jp` の Cookie を **JSON形式**でエクスポート（コピー）します。
+   最低限 `REVEL_SESSION` が含まれていればOKです。
+
+3. **cookie.json を作成**
+   リポジトリ直下（`atcoder-wsl-cpp/`）に `cookie.json` という名前で保存し、JSONを貼り付けます。
+
+4. **両ツールへ反映**
+   WSLターミナルで以下を実行します。これで `oj`（cookie.jar）と `acc`（session.json）の**両方**に
+   セッションが書き込まれます。
    ```bash
    ./tools/update_cookie.sh
    ```
-4. **再提出**:
-   `acsub` を実行して提出できるか確認してください。
 
-### Step 2: AtCoderへのログイン
+5. **ログイン確認**
+   ```bash
+   oj login --check https://atcoder.jp/   # => [SUCCESS] You have already signed in.
+   acc session                            # => check login status... OK
+   ```
 
-WSLターミナルで:
+> **セッションの有効期限について**: コピーした Cookie（`REVEL_SESSION`）には有効期限があります。
+> ある日突然 `oj`/`acc` がログイン切れになったら、**2〜5 を再実行**（cookie.json を再エクスポートして
+> `./tools/update_cookie.sh`）してください。`update_cookie.sh` はリポジトリの場所を自動検出するので、
+> リポジトリを移動しても編集不要です。
 
-```bash
-# online-judge-tools でログイン
-oj login https://atcoder.jp/
-
-# atcoder-cli でログイン
-acc login
-```
-
-> **注意**: ターミナルでのパスワード入力がうまくいかない場合は、Seleniumを使ったブラウザ認証か、Chromeのcookieを手動でコピーする方法があります（後述）。
+> **補足（提出時の× Error）**: 上記でログインできていても、`oj submit` 自体が Turnstile で
+> 弾かれて「× Error」になる場合があります。その場合は `acsub` が自動でコードをクリップボードへ
+> コピーし提出ページをブラウザで開くので、**Ctrl+V → 提出ボタン**で手動提出してください
+> （[acsub の制約](#acsub---提出) 参照）。
 
 ### Step 3: PowerShellエイリアスの設定（推奨）
 
@@ -354,57 +361,33 @@ source ~/.nvm/nvm.sh
 export PATH="$HOME/.nvm/versions/node/v22.19.0/bin:$PATH"
 ```
 
-### ログインできない（Username or Password is incorrect）
+### ログインできない / `acc login`・`oj login` が失敗する
 
-ターミナルでの対話入力がうまくいかない場合があります。
+**まず前提**: 2024年以降、AtCoder の Cloudflare Turnstile により、`acc login` / `oj login` の
+**対話ログイン（ユーザー名・パスワード入力）は弾かれます**。ユーザー名・パスワードが正しくても
+失敗するのが正常です。対話ログインを直す方法はありません。
 
-**解決策1: Selenium を使う**
-
-```bash
-pip install selenium
-oj login https://atcoder.jp/
-```
-
-ブラウザが起動してログインできます。
-
-**解決策2: Chromeのcookieを手動コピー**
-
-1. ChromeでAtCoderにログイン
-2. 拡張機能「EditThisCookie」でcookieをエクスポート
-3. `cookie.json` として保存
-4. 以下のスクリプトで変換:
-
-```python
-import json
-import http.cookiejar
-
-with open('cookie.json', 'r') as f:
-    data = json.load(f)
-
-cj = http.cookiejar.LWPCookieJar('cookie.jar')
-
-for x in data:
-    c = http.cookiejar.Cookie(
-        version=0, name=x['name'], value=x['value'],
-        port=None, port_specified=False,
-        domain=x['domain'], domain_specified=True,
-        domain_initial_dot=x['domain'].startswith('.'),
-        path=x['path'], path_specified=True,
-        secure=x['secure'], expires=x.get('expirationDate'),
-        discard=False, comment=None, comment_url=None,
-        rest={'HttpOnly': x.get('httpOnly')}, rfc2109=False
-    )
-    cj.set_cookie(c)
-
-cj.save()
-print('cookie.jar created')
-```
-
-5. WSLの所定の場所にコピー:
+**正しい解決策**: [Step 2: AtCoderへのログイン](#step-2-atcoderへのログイン-cookieコピー方式が正攻法) の
+**Cookieコピー方式**を使ってください。要約すると:
 
 ```bash
-cp cookie.jar ~/.local/share/online-judge-tools/cookie.jar
+# 1. ブラウザでログイン → EditThisCookie で cookie を JSON エクスポート
+# 2. リポジトリ直下に cookie.json として保存
+# 3. oj と acc の両方へ反映（リポジトリ位置は自動検出）
+./tools/update_cookie.sh
+
+# 4. 確認
+oj login --check https://atcoder.jp/   # => You have already signed in.
+acc session                            # => check login status... OK
 ```
+
+`update_cookie.sh` が内部で行うこと:
+- `convert_cookie.py` で `cookie.json` → `cookie.jar`(LWP形式) に変換し `~/.local/share/online-judge-tools/cookie.jar` へ配置（**oj 用**）
+- `cookie.json` から `REVEL_SESSION` / `REVEL_FLASH` を抽出し `acc config-dir`/`session.json` へ書き込み（**acc 用**）
+
+> **注意**: WSL の PATH に Windows 版 npm の `acc`（`/mnt/c/.../AppData/Roaming/npm/acc`）が
+> 先頭にいると WSL bash 上で正しく動かない（exit 127）。`update_cookie.sh` は nvm の Linux 版
+> `acc` を優先するよう対策済みです。
 
 ### テストケースがダウンロードされない
 
