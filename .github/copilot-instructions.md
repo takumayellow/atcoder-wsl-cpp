@@ -67,5 +67,4 @@ if __name__ == '__main__':
 - `tools/acx`: Problem opener script.
 - `tools/test_code.sh`: Testing logic.
 - `ac-library/`: AtCoder C++ library headers.
-- `tools/templates/`: Code templates for new problems.</content>
-<parameter name="filePath">c:\Users\takum\Documents\atcoder\atcoder-wsl-cpp\.github\copilot-instructions.md
+- `tools/templates/`: Code templates for new problems.
