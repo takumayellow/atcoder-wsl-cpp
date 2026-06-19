@@ -1,0 +1,16 @@
+{
+  // ICPC 本番用・最小設定。色テーマ等は「いじらず VSCode 既定のまま」。
+  // ここで触るのはルール順守（AI補完オフ）と事故防止（自動整形オフ）だけ。
+
+  // --- ルール: 生成AIによるコード補完は禁止 ---
+  "github.copilot.enable": { "*": false },
+  "editor.inlineSuggest.enabled": false,
+
+  // --- 事故防止: 予期せぬ自動整形・差分を出さない ---
+  "editor.formatOnSave": false,
+  "editor.formatOnPaste": false,
+  "files.trimTrailingWhitespace": false
+
+  // 注: 非AIの IntelliSense（標準補完）は既定のままで使ってよい（ルール上OK）。
+  //     workbench.colorTheme 等は意図的に設定しない＝マシン既定を尊重する。
+}
