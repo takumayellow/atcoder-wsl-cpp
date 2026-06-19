@@ -102,14 +102,17 @@ icpc/
 ### ルール違反になる（必須）
 - **生成AI補完を完全オフ**: Copilot / Codeium / Tabnine / Continue / Cline 等。ルールで
   「生成AIシステム（GitHub Copilot等）」は**禁止**。
+  - 設定は**エディタ本体（User設定）でオフ**にする。プロジェクト単位の `.vscode/settings.json` は置かない。
+    具体的には `editor.inlineSuggest.enabled: false`（インライン補完の大元）＋ `github.copilot.enable: {"*": false}`。
+  - **Cline / Copilot 等の AI 拡張は本番中 Disable**（Cursor は内蔵 Tab も切る）。
 - **VSCode の Settings Sync でサインインしない**: 共有/貸出PCで自分のアカウントに入ると
   Copilot や拡張が**同期で勝手に入る**＝事故。クリーンな既定プロファイルで臨む。
 - **インターネット遮断**: 競技システム以外アクセス禁止（ブラウザは閉じる）。
 
 ### 推奨（事故防止）
 - **色テーマ・設定はデフォルトのまま**、個人設定を持ち込まない。`format on save` も切る
-  （出力とコードの取り違え・無駄な差分防止）。`.vscode/settings.json` で AI 補完オフのみ最小設定。
-- **非AIの IntelliSense（標準補完）は使ってOK**（IDE使用は公式に許可。切るのは AI のみ）。
+  （出力とコードの取り違え・無駄な差分防止）。
+- **非AIの IntelliSense（標準補完）・linter は使ってOK**（IDE使用は公式に許可。切るのは生成AIのみ）。
 - **出力の完全一致**: 行末スペース・改行・大文字小文字までファイル全体で照合 → 1文字ずれで WA。
 - **終端 `0` を出力しない／正しく読み飛ばす**。
 - **コンパイラ/言語バージョンを事前に本番ジャッジへ合わせる**（手元 g++・Python のバージョン確認）。
