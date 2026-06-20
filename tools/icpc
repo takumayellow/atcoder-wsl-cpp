@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# ICPC 国内予選 練習ディレクトリのランチャ。
+#   icpc <year> <problem> [py|cpp]
+#     -> icpc/practice/<year>/<problem>/ を作成し、テンプレを main.py(.cpp) としてコピー、
+#        CD:/OPEN: 行を出力して WSL 側 icpc() 関数に cd + エディタオープンさせる。
+#   icpc <problem>            -> 直近の year を再利用
+#   icpc                      -> 直近の year / problem a
+# 既定テンプレ言語は py。
+set -e
+
+# Detect repo root (tools/ の親)
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+PRACTICE="$REPO_ROOT/icpc/practice"
+TEMPLATE_DIR="$REPO_ROOT/icpc/template"
+STATE="$HOME/.config/acx/icpc_last"
+mkdir -p "${STATE%/*}"
+
+LANG_OPT="py"
+ARGS=()
+for arg in "$@"; do
+    case "$arg" in
+        py|python) LANG_OPT="py" ;;
+        cpp|c++)   LANG_OPT="cpp" ;;
+        *)         ARGS+=("$arg") ;;
+    esac
+done
+
+YEAR="${ARGS[0]:-}"
+PROB="${ARGS[1]:-}"
+
+# "icpc a" のように problem だけ渡された場合（year は4桁数字なので判別）
+if [[ -n "$YEAR" && ! "$YEAR" =~ ^[0-9]{4}$ ]]; then
+    PROB="$YEAR"
+    YEAR=""
+fi
+
+# year 省略時は直近を復元
+if [[ -z "$YEAR" ]]; then
+    if [[ -f "$STATE" ]]; then
+        YEAR="$(cat "$STATE")"
+    else
+        echo "usage: icpc <year> <problem> [py|cpp]" >&2
+        exit 1
+    fi
+fi
+
+PROB="${PROB:-a}"
+PROB="${PROB,,}"
+
+TARGET_DIR="$PRACTICE/$YEAR/$PROB"
+mkdir -p "$TARGET_DIR"
+
+# テンプレをコピー（既存ファイルは上書きしない）
+if [[ "$LANG_OPT" == "cpp" ]]; then
+    FILE="main.cpp"
+else
+    FILE="main.py"
+fi
+if [[ ! -f "$TARGET_DIR/$FILE" ]]; then
+    cp "$TEMPLATE_DIR/$FILE" "$TARGET_DIR/$FILE"
+fi
+
+# 状態保存
+echo "$YEAR" > "$STATE"
+
+# WSL ラッパへ通知
+echo "CD:$TARGET_DIR"
+echo "OPEN:$TARGET_DIR/$FILE"
+echo "Ready: icpc/practice/$YEAR/$PROB/$FILE"
