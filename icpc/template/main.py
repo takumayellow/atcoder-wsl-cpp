@@ -14,7 +14,9 @@
 #   注意: NumPy は実質使えない（同梱コンパイル不可・ジャッジ非搭載前提）。素の Python 3 で書く。
 
 import sys
-input = sys.stdin.readline
+# 末尾改行を取り除く＝組み込み input() と同じ挙動のまま高速化。
+# これにより数値も文字列も普段どおり書ける（文字列で .rstrip() を書かなくてよい）。
+input = lambda: sys.stdin.readline().rstrip("\n")
 
 
 def main():
