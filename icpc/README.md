@@ -1,5 +1,8 @@
 # ICPC 用作業フォルダ
 
+> ⚠ **正本は別リポジトリに移動しました** → https://github.com/takumayellow/icpc-team-2026 （Private / チーム共有）
+> このフォルダは凍結コピーです。今後の作業・編集はそちらで行ってください。
+
 チーム（C++ 2〜3人 ＋ Python 1人 / OS バラバラ）の共有環境。
 AtCoder 用とは別物。**C++ と Python を同等**に整備する。
 
