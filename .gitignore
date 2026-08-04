@@ -6,6 +6,11 @@
 # include ACL in repo (we remove ignore)
 # ac-library/**
 
+# AtCoder のログインセッション。PC のローカルにだけ置き、リポジトリには入れない
+cookie.json
+cookie.jar
+session.json
+
 *.in
 *.out
 

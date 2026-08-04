@@ -65,6 +65,8 @@ cd /mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp
 
 3. **cookie.json を作成**
    リポジトリ直下（`atcoder-wsl-cpp/`）に `cookie.json` という名前で保存し、JSONを貼り付けます。
+   これはログインセッションそのものなので、`.gitignore` 済みです（`cookie.jar` / `session.json` も同様）。
+   PC のローカルにだけ置き、**コミットしない**でください。
 
 4. **両ツールへ反映**
    WSLターミナルで以下を実行します。これで `oj`（cookie.jar）と `acc`（session.json）の**両方**に
