@@ -14,6 +14,12 @@ session.json
 *.in
 *.out
 
+# ビルド成果物（g++ の出力。ソースから再生成できるのでコミットしない）
+# 'main' は拡張子なしの実行ファイル (Linux/WSL)。main.cpp / main.py には一致しない
+*.exe
+*.o
+main
+
 # TeX intermediate files
 *.aux
 *.dvi
