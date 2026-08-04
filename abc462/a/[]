@@ -1,0 +1,21 @@
+N = int(input())
+list = []
+for i in range(N):
+    x,y = map(int, input().split())
+    list.append([x,y])
+    list.sort()
+count = 1
+i = 0
+j = 1
+
+base_y = list[0][1]
+while(j <= N-1):
+    base_y = list[i][1]
+    next_y = list[j][1]
+    if list[i][0] < list[j][0] and list[i][1] > list[j][1]:
+        count += 1
+        i = j
+        j += 1
+    else: j+=1
+
+print(count)
