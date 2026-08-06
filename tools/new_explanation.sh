@@ -42,9 +42,19 @@ EDITORIAL_URL="https://atcoder.jp/contests/$CONTEST/editorial"
 CONTEST_FULL_NAME="{{CONTEST_FULL_NAME}}"
 TITLE="{{TITLE}}"
 
+# 動く python を探す。Git Bash の `python3` は Microsoft Store のスタブのことがあり、
+# command -v は通るのに実行すると失敗する（＝タイトル補完が黙って効かない）。
+PY=""
+for _cand in python3 python; do
+  if command -v "$_cand" >/dev/null 2>&1 && "$_cand" -c 'pass' >/dev/null 2>&1; then
+    PY="$_cand"
+    break
+  fi
+done
+
 # contest.acc.json があればコンテスト名と問題タイトルを引く
 ACC_JSON="$(dirname "$TARGET_DIR")/contest.acc.json"
-if [[ -f "$ACC_JSON" ]] && command -v python3 >/dev/null 2>&1; then
+if [[ -f "$ACC_JSON" && -n "$PY" ]]; then
   read -r -d '' _py <<'PYEOF' || true
 import json, sys
 path, label = sys.argv[1], sys.argv[2].upper()
@@ -59,7 +69,7 @@ for t in d.get("tasks", []):
         print(t.get("url", ""))
         break
 PYEOF
-  mapfile -t _info < <(python3 -c "$_py" "$ACC_JSON" "$PROBLEM")
+  mapfile -t _info < <("$PY" -c "$_py" "$ACC_JSON" "$PROBLEM" 2>/dev/null)
   [[ -n "${_info[0]:-}" ]] && CONTEST_FULL_NAME="${_info[0]}"
   [[ -n "${_info[1]:-}" ]] && TITLE="${_info[1]}"
   [[ -n "${_info[2]:-}" ]] && PROBLEM_URL="${_info[2]}"

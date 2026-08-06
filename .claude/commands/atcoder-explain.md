@@ -1,6 +1,6 @@
 ---
-description: 解いた AtCoder 問題の解説資料 (explanation.md) を作り、main.cpp に詳細コメントを追記する
-argument-hint: "[問題フォルダ (例: abc128/c)。省略時は直近に触った問題フォルダ]"
+description: 解いた AtCoder 問題の解説資料 (explanation.md) を作り、コードに詳細コメントを追記し、必要なら Beamer スライドも作る
+argument-hint: "[問題フォルダ (例: abc128/c)。省略時は直近に触った問題フォルダ] [--slides]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebFetch
 ---
 
@@ -50,11 +50,28 @@ MSYS2_ARG_CONV_EXCL='*' wsl.exe bash -c 'cd /mnt/c/.../<contest>/<problem> && \
 - 変数の意味、間違えやすい行（0-indexed 変換、ビット演算、ループ範囲）に行コメント。
 - **追記後に再度ビルド＋全サンプル実行**して、壊していないことを確認する。
 
-### 6. コミット
+### 6. スライド（`--slides` 指定時、または図が要ると判断したとき）
+フォーマットは `tools/slides_guide.md` に定義されている。**まずそれを読む**。
+
+```bash
+tools/new_slides.sh <dir>                 # slides.tex + latexmkrc の雛形
+tools/build_slides.sh <dir> --preview     # ビルド + 全ページを PNG 化
+```
+
+- **explanation.md の再構成であって、考察を書き直すものではない。** 節の対応表はガイド参照。
+- 図は **TikZ** で描く（ベクタ・diff が効く・オフラインで完結）。外部ツールで作った画像を
+  貼らない。NotebookLM 等は音声要約やマインドマップ向けで、スライドの作図には使わない。
+- `verbatim` **と `\verb`** を使うフレームには `[fragile]` が要る。
+- **`--preview` で描き出した PNG を全ページ目で見るまで完成にしない。**
+  縦のはみ出しはエラーにならず、下端がフッターに潜って消える。
+- `slides.pdf` もコミットする（見るのに TeX 環境が要らなくなる）。
+
+### 7. コミット
 ```
 docs(<contest>-<problem>): 解説資料を追加 + main.cpp に注釈
 ```
 `git add` は触ったファイルだけを明示指定する（`-A` / `.` は使わない）。
+スライドを作った場合は `slides.tex` `latexmkrc` `slides.pdf` を別コミットにしてよい。
 
 ## 出力
 最後に、書いた解法の要点を 5 行以内でユーザーに要約して伝える（資料の丸写しはしない）。

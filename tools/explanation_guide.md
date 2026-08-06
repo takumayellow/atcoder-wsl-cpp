@@ -10,7 +10,7 @@
 | **置き場所** | `<contest>/<problem>/explanation.md`（問題フォルダ直下。コードと同居させる） |
 | **形式** | Markdown（GitHub / エディタでそのまま読める・diff が効く・grep できる） |
 | **コード全文** | **貼らない**。`main.cpp` に**行コメント**で書く。資料には要点 2〜4 行だけ抜粋 |
-| **PDF / スライド** | 必要なときだけ `slides.tex` を追加（人に見せる・発表するとき限定） |
+| **PDF / スライド** | 図で見せたいとき `slides.tex` を追加（`tools/new_slides.sh`）。正本は Markdown のまま |
 
 理由: 解いた直後は「考え方」を残したいのであって、清書したいわけではない。
 Markdown なら 10 分で書けて、`git grep` で「imos法」「bit全探索」と検索して過去の自分を引ける。
@@ -33,6 +33,10 @@ cd abc128/c
 # 3. サンプルで検証してから「AC」と書く
 g++ -std=gnu++17 -O2 -o /tmp/abc128c main.cpp
 printf "2 2\n2 1 2\n1 2\n0 1\n" | /tmp/abc128c    # => 1
+
+# 4.（任意）図で見せたいならスライドも作る
+../../tools/new_slides.sh
+../../tools/build_slides.sh . --preview
 ```
 
 Claude Code から一括でやる場合は **`/atcoder-explain`**（`.claude/commands/atcoder-explain.md`）。
@@ -70,3 +74,4 @@ Claude Code から一括でやる場合は **`/atcoder-explain`**（`.claude/com
 - [`abc128/c/explanation.md`](../abc128/c/explanation.md) — bit 全探索。標準的な構成の見本。
 - [`abc462/c/explanation.md`](../abc462/c/explanation.md) — 落とし穴（向きを間違えると WA）の書き方。
 - [`abc462/d/explanation.md`](../abc462/d/explanation.md) — 複数実装を 0 節の表で案内する例。
+- [`arc127/a/explanation.md`](../arc127/a/explanation.md) — Python 解 + スライド併設の例。

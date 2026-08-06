@@ -1,0 +1,76 @@
+% {{CONTEST_UPPER}} {{PROBLEM_UPPER}} - {{TITLE}}
+% ビルド: ../../tools/build_slides.sh      （latexmk -pdfdvi → platex + dvipdfmx）
+% 図は TikZ で描く。書き方の指針は tools/slides_guide.md を参照。
+\documentclass[dvipdfmx,aspectratio=169]{beamer}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{pxjahyper}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,backgrounds,fit}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+% 状態の色分け（正解/不正解・採用/棄却などに使い回す）
+\definecolor{ok}{RGB}{0,140,70}
+\definecolor{ng}{RGB}{200,30,30}
+\definecolor{onc}{RGB}{240,180,0}
+
+\title[{{CONTEST_UPPER}} {{PROBLEM_UPPER}}]{AtCoder {{CONTEST_UPPER}} -- {{PROBLEM_UPPER}}\\\small {{TITLE}} の解説}
+\author[{{CONTEST}}]{}
+\institute{}
+\date{}
+
+\begin{document}
+
+%====================================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%====================================================================
+\begin{frame}{問題の概要}
+  % 入力・出力・制約を 5 行以内で。問題文を丸写ししない。
+  % 具体例を 1 つ図にすると、以降の説明が全部それを指せる。
+\end{frame}
+
+%====================================================================
+\begin{frame}{まず制約を読む}
+  % 「なぜこの解法に行き着くか」の起点。計算量の見積りを数式で置く。
+\end{frame}
+
+%====================================================================
+\begin{frame}{アイデア}
+  % 核心をひとつだけ。図（TikZ）と文章を左右 columns に分けると収まりやすい。
+  \begin{columns}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \begin{tikzpicture}
+      \end{tikzpicture}
+
+      % 図の注釈は tikzpicture の外に置く（中に置くと段の幅をはみ出しやすい）
+    \end{column}
+    \begin{column}{0.5\textwidth}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%====================================================================
+\begin{frame}[fragile]{擬似コードと実装の要点}
+  % verbatim / \verb を使うフレームには [fragile] が必須
+  \begin{verbatim}
+  \end{verbatim}
+\end{frame}
+
+%====================================================================
+\begin{frame}{サンプルで確認}
+  % 小さい入力を手で全部追う。explanation.md の表をそのまま持ってくる。
+\end{frame}
+
+%====================================================================
+\begin{frame}[fragile]{まとめ}
+  % 次に同じ形を見たとき効く教訓を 3〜4 個 + 同系統の問題
+\end{frame}
+
+\end{document}

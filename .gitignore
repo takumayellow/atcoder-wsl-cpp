@@ -20,6 +20,9 @@ session.json
 *.o
 main
 
+# tools/build_slides.sh --preview が吐くページ画像（目視確認用。毎回作り直す）
+.slides_preview/
+
 # TeX intermediate files
 *.aux
 *.dvi
