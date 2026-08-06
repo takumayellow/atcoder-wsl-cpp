@@ -12,7 +12,12 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMPLATE="$REPO_ROOT/tools/templates/explanation.md"
 
-TARGET_DIR="$(cd "${1:-.}" && pwd)"
+# cd -- で、- 始まりの引数がオプション扱いされるのを防ぐ。
+# 存在しないパスは set -e 任せにせず、ここで理由の分かるエラーにする。
+TARGET_DIR="$(cd -- "${1:-.}" 2>/dev/null && pwd)" || {
+  echo "error: そのディレクトリはありません: ${1:-.}" >&2
+  exit 1
+}
 OUT="$TARGET_DIR/explanation.md"
 
 if [[ ! -f "$TEMPLATE" ]]; then
