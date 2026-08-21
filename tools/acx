@@ -34,6 +34,15 @@ CID=${1:-}
 P=${2:-}
 TEMPLATE_OPT=""
 
+# Support "acx <contest>/<problem>" syntax in addition to "acx <contest> <problem>"
+if [[ "$CID" == */* ]]; then
+    SLASH_P="${CID#*/}"
+    CID="${CID%%/*}"
+    if [ -z "$P" ]; then
+        P="$SLASH_P"
+    fi
+fi
+
 # Argument parsing helpe
 # Check if any argument is "py" or "python" to set mode
 for arg in "$@"; do
