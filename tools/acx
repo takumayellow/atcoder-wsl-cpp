@@ -44,20 +44,24 @@ if [[ "$CID" == */* ]]; then
 fi
 
 # Argument parsing helpe
-# Check if any argument is "py" or "python" to set mode
+# Check if any argument is a language selector to set mode
 for arg in "$@"; do
     if [[ "$arg" == "py" || "$arg" == "python" ]]; then
         TEMPLATE_OPT="python"
         break
     fi
+    if [[ "$arg" == "cs" || "$arg" == "csharp" ]]; then
+        TEMPLATE_OPT="csharp"
+        break
+    fi
 done
 
 # If first arg is empty, try to load last contest
-if [ -z "$CID" ] || [[ "$CID" == "py" || "$CID" == "python" ]]; then
+if [ -z "$CID" ] || [[ "$CID" == "py" || "$CID" == "python" || "$CID" == "cs" || "$CID" == "csharp" ]]; then
     if [ -f "$S" ]; then
         CID=$(cat "$S")
     else
-        echo "usage: acx <contest-id> [problem] [py]"
+        echo "usage: acx <contest-id> [problem] [py|cs]"
         exit 1
     fi
 fi
@@ -75,7 +79,7 @@ if [[ "$CID" =~ ^[a-z]$ ]]; then
 fi
 
 # Clean up P
-if [[ "$P" == "py" || "$P" == "python" ]]; then P=""; fi
+if [[ "$P" == "py" || "$P" == "python" || "$P" == "cs" || "$P" == "csharp" ]]; then P=""; fi
 P=${P:-a}
 P=${P,,}
 
@@ -87,6 +91,8 @@ if [ ! -d "$CID" ]; then
     if [[ "$TEMPLATE_OPT" == "python" ]]; then
         # Use default-choice all to skip interactive selection
         acc new "$CID" --template python --choice all
+    elif [[ "$TEMPLATE_OPT" == "csharp" ]]; then
+        acc new "$CID" --template csharp --choice all
     else
         acc new "$CID" --template cpp --choice all
     fi
@@ -123,11 +129,17 @@ if [ -f "main.py" ]; then
     FILE_TO_OPEN="main.py"
 elif [ -f "main.cpp" ]; then
     FILE_TO_OPEN="main.cpp"
+elif [ -f "main.cs" ]; then
+    FILE_TO_OPEN="main.cs"
 else
     # Create if missing based on intent
     if [[ "$TEMPLATE_OPT" == "python" ]]; then
         cp "$REPO_ROOT/tools/templates/python/main.py" .
         FILE_TO_OPEN="main.py"
+    elif [[ "$TEMPLATE_OPT" == "csharp" ]]; then
+        cp "$REPO_ROOT/tools/templates/csharp/main.cs" .
+        cp "$REPO_ROOT/tools/templates/csharp/main.csproj" .
+        FILE_TO_OPEN="main.cs"
     else
         cp "$REPO_ROOT/tools/templates/cpp/main.cpp" .
         FILE_TO_OPEN="main.cpp"

@@ -23,6 +23,10 @@ main
 # tools/build_slides.sh --preview が吐くページ画像（目視確認用。毎回作り直す）
 .slides_preview/
 
+# .NET のビルド成果物（main.cs / main.csproj から再生成できる）
+bin/
+obj/
+
 # TeX intermediate files
 *.aux
 *.dvi

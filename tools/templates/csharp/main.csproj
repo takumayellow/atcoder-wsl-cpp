@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- AtCoder のジャッジは .NET 9.0.8 / C# 13.0 -->
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Console.ReadLine() が string? を返すため、競プロでは警告を切る -->
+    <Nullable>disable</Nullable>
+    <AssemblyName>main</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <!-- 既定のグロブだとサブディレクトリの .cs まで拾って Main が重複するので、
+       コンパイル対象を main.cs だけに固定する -->
+  <PropertyGroup>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="main.cs" />
+  </ItemGroup>
+
+</Project>

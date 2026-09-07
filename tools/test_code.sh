@@ -18,7 +18,20 @@ if [ -f "main.cpp" ]; then
 elif [ -f "main.py" ]; then
     echo "Testing Python (main.py)..."
     oj t -c "python3 main.py"
+elif [ -f "main.cs" ]; then
+    echo "Testing C# (main.cs)..."
+    # WSL には .NET SDK を入れていないので、Windows 側の dotnet.exe を使う。
+    # 生成される main.exe は WSL の interop からそのまま実行できる。
+    if command -v dotnet >/dev/null 2>&1; then
+        DOTNET=dotnet
+        EXE=./bin/oj/main
+    else
+        DOTNET=dotnet.exe
+        EXE=./bin/oj/main.exe
+    fi
+    "$DOTNET" build -c Release -o bin/oj -v q --nologo
+    oj t -c "$EXE"
 else
-    echo "Error: No main.cpp or main.py found in current directory."
+    echo "Error: No main.cpp / main.py / main.cs found in current directory."
     exit 1
 fi
