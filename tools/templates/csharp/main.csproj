@@ -11,14 +11,18 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
-  <!-- 既定のグロブだとサブディレクトリの .cs まで拾って Main が重複するので、
-       コンパイル対象を main.cs だけに固定する -->
+  <!-- 既定のグロブだと同じフォルダの .cs を全部拾って Main が重複するので、
+       コンパイル対象を 1 ファイルに固定する。
+       既定は main.cs。別ファイルを動かしたいときは
+         dotnet run -p:F=sub.cs
+       のように F で上書きする。 -->
   <PropertyGroup>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <F Condition="'$(F)' == ''">main.cs</F>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="main.cs" />
+    <Compile Include="$(F)" />
   </ItemGroup>
 
 </Project>
