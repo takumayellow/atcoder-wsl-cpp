@@ -1,0 +1,1 @@
+a=input().split();a.pop(ord(input()[0])%3-1);print(min(map(int,a)))

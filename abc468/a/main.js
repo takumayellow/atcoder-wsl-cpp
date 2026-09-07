@@ -4,7 +4,7 @@ function Main (input){
     const tmp = input[1].split(" ").map(Number);
     let result = 0;
     for (let i = 0; i< n-2; i++){
-        if(tmp[i]<tmp[i-1] && tmp[i+1]>tmp[i+2]){
+        if(tmp[i]<tmp[i+1] && tmp[i+1]>tmp[i+2]){
             result += 1;
         }
     }

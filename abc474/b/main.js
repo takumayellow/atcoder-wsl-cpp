@@ -8,25 +8,16 @@ function main(input) {
     for (let i = 0; i < Math.floor(n/10); i++) {
         for (let j = 0; j < 10; j++) {
             let x = p[10*i+j];
-            console.log("インデックス" + (10*i+j));
-            console.log("値"+x);
-            console.log("区間左"+10*i);
-            console.log("区間右"+10*(i+1));
-            if (10*i <= x && x <= 10*(i+1)) { console.log("通過"); continue; }
-            else { flag = false; console.log("falseは"+flag); break; }
+           if (10*i <= x && x <= 10*(i+1)) { continue; }
+            else { flag = false; break; }
         }
     }
 
     if (n%10 != 0) {
         let i = Math.floor((n/10));
-        console.log(10*i)
         for (let s = 10*i; s < n; s++) {
             let x = p[s];
-            console.log("インデックスl"+s);
-            console.log("値"+x);
-            console.log("区間左"+10*i);
-            console.log("区間右"+10*(i+1));
-            if (10*i <= x && x <= 10*(i+1)) { console.log("通過"); continue; }
+           if (10*i <= x && x <= 10*(i+1)) { continue; }
             else { flag = false; break; }
         }
     }

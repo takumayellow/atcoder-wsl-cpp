@@ -1,0 +1,1 @@
+@a=split" ",<>;splice@a,ord(<>)%3-1,1;print$a[$a[1]<$a[0]]
