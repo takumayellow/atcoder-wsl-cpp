@@ -314,8 +314,9 @@ cd abc128/c
 
 実例: [`abc128/c/`](abc128/c/) / [`arc127/a/`](arc127/a/)（どちらも explanation.md + slides.pdf）
 
-紙に書いた考察メモは、撮影した原本を Box に置き、自分がどう考えてどこで間違えたかを `thinking.md` に残す。
-置き場所・問題の特定方法・書き方: **[`docs/handwritten-memos.md`](docs/handwritten-memos.md)**（例: [`abc473/c/thinking.md`](abc473/c/thinking.md)）
+紙に書いた考察メモは、撮影した原本を Box に置き、メモを手書き風に描き直したページと振り返りを `thinking.tex` → `thinking.pdf` に残す。
+置き場所・問題の特定方法・書き方: **[`docs/handwritten-memos.md`](docs/handwritten-memos.md)**（例: [`abc048/b/thinking.pdf`](abc048/b/thinking.pdf)）。
+Claude Code では `atcoder-handmemo` スキルで一通り進む。
 
 ---
 

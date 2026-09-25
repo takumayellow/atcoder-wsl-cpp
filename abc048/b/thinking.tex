@@ -1,0 +1,141 @@
+% abc048 B - Between a and b ... の手書きメモの再現と振り返り
+% ビルド: tools/build_thinking.sh abc048/b --preview
+\documentclass[a4paper]{article}
+\usepackage[margin=1.2cm]{geometry}
+\usepackage{handmemo}
+\usepackage{hyperref}
+\pagestyle{empty}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1 枚目
+\begin{memopage}{20260925\_174824.jpg}
+  \hw(1.4,1.3){B --- Between a and b ...}
+  \hw(0.8,3.0){$a,b\ (\geq 0)$}
+  \hw(5.6,3.0){$a \leq b$}
+  \hw(8.4,3.0){$x \in \mathbb{N}$}
+
+  \hw(0.8,4.7){\ttfamily\hwlfont for i in range(a, b):}
+  \redpen(9.6,4.5){b は $10^{18}$ まで。1 つずつ数えると間に合わない\\→ 1 回目の提出は TLE}
+  \redarrow(9.5,4.6)(8.3,4.7)
+
+  \hw(1.2,6.6){a〜b}
+  \hw(0.8,7.9){xで割り切れるものの個数}
+
+  \hw(0.8,9.8){$m \in [a,b]$}
+  \hwstrike(5.8,9.8){\ttfamily\hwlfont x \% m == 0}
+  \hw(5.8,10.9){\ttfamily\hwlfont m \% x == 0}
+
+  \hwm(0.8,12.6){\floor{\frac{a}{x}}\ \ \floor{\frac{b}{x}}}
+  \hwm(0.8,15.2){\floor{\frac{b}{x}} - \floor{\frac{a}{x}}}
+
+  \hw(0.4,17.2){a\ \ b\ \ x}
+  \hw(0.4,18.2){4\ \ 8\ \ 2}
+  \hw(5.6,17.9){4〜8\ \ 2}
+  \hw(10.0,17.9){4, 6, 8}
+  \hwline(10.05,18.5)(10.35,18.5) \hwline(11.2,18.5)(11.55,18.5)
+
+  \hw(0.5,19.8){0\ \ 5\ \ 1}
+  \hwm(7.6,20.4){\floor{\frac{8}{2}} - \floor{\frac{4}{2}}^{+1} = 2}
+  \hw(8.0,22.0){4} \hw(9.9,22.0){2}
+  \redpen(13.3,19.2){a=4 は 2 で割り切れる\\→ +1 で 3 になり合う}
+
+  \hwm(0.3,22.4){\floor{\frac{5}{1}} - \floor{\frac{0}{1}} + 1}
+  \redpen(3.2,19.8){← a=0 も割り切れる側}
+
+  \hw(3.9,23.8){1\ \ 100\ \ 3}
+  \hwm(2.4,24.9){\floor{\frac{100}{3}} - \floor{\frac{1}{3}} = 33 - 0 = 33}
+  \hw(9.9,25.65){\normalsize +1}
+  \redpen(9.6,23.4){a=1 は割り切れない。ここで +1 すると 34\\→ 2 回目の提出 {\hwlfont b//x - a//x + 1} は WA（答えは 33）}
+  \redarrow(12.2,24.1)(10.7,25.5)
+  \redpen(0.4,16.5){\small 検算した 3 例のうち 2 例が「a が割り切れる」ケースだった}
+\end{memopage}
+
+% ---------------------------------------------------------------- 2 枚目
+\begin{memopage}{20260925\_174819.jpg}
+  \hw(1.4,1.2){4\ \ 8\ \ 2}
+  \hw(1.4,2.3){3}
+  \hwm(5.6,1.6){\floor{\frac{b}{x}} - \floor{\frac{a-1}{x}}}
+  \hwm(10.6,1.6){\floor{\frac{8}{2}} - \floor{\frac{3}{2}} = 4-1 = 3}
+  \redbox(5.4,0.6)(17.4,2.7)
+  \redpen(9.2,3.2){これが答え（3 回目の提出で AC）}
+
+  \hwm(0.8,4.4){\frac{8}{2} - \frac{\not 4}{2} = 4-2 = 2}
+  \hw(2.9,3.3){\normalsize 3}
+  \hwcircle(2.3,4.2)(1.6,1.0)
+  \hw(5.2,6.0){割り切れるなら +1}
+  \redpen(5.2,7.0){場合分けで直すより、a を a−1 に\\置き換える方が端で迷わない}
+
+  \hwstrike(9.6,4.6){$\frac{8}{4}$}
+  \hwm(10.9,4.6){\ceil{\frac{8-3}{2}} = \not 2\ 3}
+
+  \hwm(10.6,8.6){\floor{\frac{8-4}{2}} + 1}
+  \hwunread(13.9,8.6){「4」は 9 にも見える}
+  \hwm(10.6,10.4){\floor{\frac{5-0}{1}} + 1 =}
+  \hwunread(14.4,10.4){右辺}
+
+  \hwm(0.8,9.4){\frac{5}{1} - \frac{0}{1} = 5 \to 6}
+  \hwm(3.8,11.4){\floor{\frac{5}{1}} - \floor{\frac{-1}{1}} = 6}
+  \redpen(0.8,12.9){a=0 でも a−1=−1 で成り立つ\\（Python の {\hwlfont //} は負の方向へ切り捨て）}
+
+  \hwunread(0.8,14.6){分数 2 つの差と「+ 1」}
+  \hwm(10.6,13.2){\ceil{\frac{9-8}{2}}}
+  \hwm(5.8,16.0){\floor{\frac{5}{2}} - \floor{\frac{\ }{2}} = 4-4 = 0}
+  \hwunread(8.1,17.2){2 つ目の分子（7 か 8）}
+
+  \hwm(0.8,18.6){\frac{10000-1}{3} = 333}
+  \hwm(0.8,21.2){\ceil{\frac{5-0}{1}} =}
+\end{memopage}
+
+% ---------------------------------------------------------------- 振り返り
+\clearpage
+\section*{abc048 B --- Between a and b ...}
+
+\begin{itemize}
+  \item 問題: \url{https://atcoder.jp/contests/abc048/tasks/abc048_b}
+  \item 提出（2026-08-04, Python）:
+    \href{https://atcoder.jp/contests/abc048/submissions/78115809}{TLE} →
+    \href{https://atcoder.jp/contests/abc048/submissions/78115968}{WA} →
+    \href{https://atcoder.jp/contests/abc048/submissions/78116111}{AC}
+  \item 手書き原本: \texttt{Box/Photo Backup/手書き/atcoder/abc048/b/}（前の 2 ページが再現。赤は後から入れた振り返り）
+\end{itemize}
+
+\subsection*{つまずき}
+\begin{itemize}
+  \item \textbf{TLE}: $b \leq 10^{18}$ を見る前に、1 つずつ数えるループを書き始めた。
+  \item \textbf{WA}: \verb|b//x - a//x + 1| を提出した。$+1$ が正しいのは $a$ が $x$ で割り切れるときだけ。
+    検算した 3 例のうち 2 例（\texttt{4 8 2}, \texttt{0 5 1}）がたまたま割り切れるケースで、
+    3 例目（\texttt{1 100 3}）で「$+1$?」と迷ったのに確かめずに出した。
+\end{itemize}
+
+\subsection*{正しい考え方}
+$0$ 以上 $n$ 以下の $x$ の倍数の個数を $g(n) = \lfloor n/x \rfloor + 1$ とおくと、
+$[a,b]$ の個数は $g(b) - g(a-1) = \lfloor b/x \rfloor - \lfloor (a-1)/x \rfloor$。
+
+\begin{center}
+\begin{tikzpicture}[x=1.15cm]
+  % 例: a=4, b=8, x=2
+  \draw[-{Stealth}] (-1.6,0) -- (9.8,0);
+  \foreach \i in {-1,...,9} {\draw (\i,0.1) -- (\i,-0.1) node[below=2pt] {\small $\i$};}
+  \foreach \i in {0,2,4,6,8} {\fill (\i,0) circle (2.6pt);}
+  \draw[redpen,line width=1.2pt] (4,0.45) -- (8,0.45);
+  \node[redpen,above] at (6,0.45) {\small $[a,b]=[4,8]$ の倍数 4, 6, 8};
+  \draw[decorate,decoration={brace,amplitude=5pt,mirror}] (-0.2,-0.75) -- (8.2,-0.75)
+    node[midway,below=6pt] {\small $g(8) = \lfloor 8/2 \rfloor + 1 = 5$};
+  \draw[decorate,decoration={brace,amplitude=5pt,mirror}] (-0.2,-1.75) -- (3.2,-1.75)
+    node[midway,below=6pt] {\small $g(a-1) = g(3) = 2$};
+\end{tikzpicture}
+\end{center}
+
+$a=0$ のときは $\lfloor -1/x \rfloor = -1$（Python の \verb|//| は負の方向へ切り捨て）なので、そのまま $0$ も数えられる。
+C++ の \verb|/| は $0$ 方向へ切り捨てるので \verb|(a-1)/x| が $0$ になり、$a=0$ で 1 足りない。
+C++ では \verb|b/x - (a == 0 ? -1 : (a-1)/x)| のように分ける。
+
+\subsection*{次に活かすこと}
+\begin{itemize}
+  \item 区間 $[a,b]$ の個数は、累積の差 $g(b) - g(a-1)$ で書く。端の $\pm 1$ を場合分けで直さない。
+  \item 検算のサンプルに「端が条件を満たさないケース」を 1 つ入れる。迷った例は出す前に手で数える。
+  \item 書き始める前に制約を見る。
+\end{itemize}
+
+\end{document}
