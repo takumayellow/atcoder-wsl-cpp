@@ -84,6 +84,12 @@
 % \hwunread(x,y){補足}: 判読できない所。推測で埋めずに枠だけ置く
 \def\hwunread(#1,#2)#3{\node[anchor=west,draw=gray,dashed,rounded corners=2pt,text=gray,
   font=\sffamily\footnotesize,inner sep=2pt] at (#1,#2) {判読不能: #3};}
+% \hwunreadmark(x,y): 行の中の 1〜2 字だけ読めない所。「?」の入った小さい点線枠を置く
+\def\hwunreadmark(#1,#2){\node[anchor=west,draw=gray,dashed,rounded corners=1pt,text=gray,
+  font=\sffamily\footnotesize,minimum width=0.5cm,minimum height=0.55cm,inner sep=0pt] at (#1,#2) {?};}
+% \hwbag(cx,cy)(rx,ry): 上が開いた U 字（袋・箱の絵）。中心と横・縦の半径で、楕円の下側 240° を描く
+\def\hwbag(#1,#2)(#3,#4){\draw[ink,hand,line width=0.7pt] (#1,#2) ++(210:{#3} and {#4})
+  arc[start angle=210,end angle=-30,x radius=#3,y radius=#4];}
 % \redpen(x,y){テキスト}: 振り返りの赤ペン（原本には無い）
 \def\redpen(#1,#2)#3{\node[anchor=west,text=redpen,font=\hwfont\normalsize,align=left,inner sep=1pt] at (#1,#2) {#3};}
 % \redarrow(x1,y1)(x2,y2): 赤ペンの矢印

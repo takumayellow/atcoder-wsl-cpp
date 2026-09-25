@@ -1,8 +1,9 @@
-% jsc2019_qual B - Kleene Inversion の手書きメモの再現（振り返りの文章は thinking.md）
+% jsc2019_qual B - Kleene Inversion の手書きメモの再現と振り返り
 % ビルド: tools/build_thinking.sh jsc2019_qual/b --preview
 \documentclass[a4paper]{article}
 \usepackage[margin=1.2cm]{geometry}
 \usepackage{handmemo}
+\usepackage{hyperref}
 \pagestyle{empty}
 
 \begin{document}
@@ -76,10 +77,46 @@
   \redpen(9.6,18.6){\small 合計の式はメモに無く、コードで直接書いた\\\small $x\frac{K(K+1)}{2} + y\frac{K(K-1)}{2}$ → 1 回目で AC}
 \end{memopage}
 
-% ---------------------------------------------------------------- 図
+% ---------------------------------------------------------------- 振り返り
 \clearpage
-\section*{図: サンプル 1 の転倒ペア（コピー内とコピー間）}
-$B = 2,1 \mid 2,1$（$A = 2,1$, $K = 2$）。黒はコピー内、赤はコピーをまたぐ転倒。
+\section*{jsc2019\_qual B --- Kleene Inversion}
+
+\begin{itemize}
+  \item 問題: \url{https://atcoder.jp/contests/jsc2019-qual/tasks/jsc2019_qual_b}
+  \item 提出（2026-08-04, Python）:
+    \href{https://atcoder.jp/contests/jsc2019-qual/submissions/78120054}{AC}（1 回目で AC）。コードは \texttt{other/jsc/2019/b/main.py}
+  \item 手書き原本: \texttt{Box/Photo Backup/手書き/atcoder/jsc2019\_qual/b/}（\texttt{20260925\_174814.jpg} の 1 枚。撮影 2026-09-25）。
+    前の 1 ページが再現。赤は後から入れた振り返り
+\end{itemize}
+
+\subsection*{メモで考えたこと}
+\begin{enumerate}
+  \item 長さ $N$ の $A$ を $K$ 回つなげた $B$（長さ $KN$）の転倒数 $t$ を $10^9+7$ で割った余り、と書き直した。
+    例: $A = 1,3,2$, $K=2$ なら $B = 1,3,2,1,3,2$。
+  \item $t = \mathrm{count}\{ (i,j) : 0 \leq i < j \leq KN-1,\ B_i > B_j \}$ と式にした。
+  \item サンプル \verb|2 2 / 2 1|（$B = 2,1,2,1$）で、大きい値から小さい値へ弧を描いて転倒ペアを数えた。
+    同じコピーの中のペアと、コピーをまたぐペアを描き分けている。
+\end{enumerate}
+
+\subsection*{つまずき}
+無し。弧の図で「同じコピー内」と「コピー間」を分けて見たのが、そのまま解法になった。
+
+\subsection*{正しい考え方}
+$A$ の中で $i<j$ かつ $A_i > A_j$ の数を $x$、$i<j$ かつ $A_i < A_j$ の数を $y$ とする。
+
+\begin{itemize}
+  \item 同じコピー内の転倒: $K$ 個のコピーそれぞれに $x$ 個 → $Kx$。
+  \item コピー間（前のコピーの $A_i$ と後ろのコピーの $A_j$）: 位置に関係なく $A_i > A_j$ の組が転倒になる。
+    そういう $(i,j)$ の数は $x + y$、コピーの組は $K(K-1)/2$。
+\end{itemize}
+
+合計
+\[
+  Kx + (x+y)\frac{K(K-1)}{2} = x\frac{K(K+1)}{2} + y\frac{K(K-1)}{2}
+\]
+提出コードはこの形（サンプル 3 例とも一致: 3, 0, 185297239）。
+
+サンプル 1（$B = 2,1 \mid 2,1$）で内と間を分けると次のとおり。黒はコピー内、赤はコピーをまたぐ転倒。
 
 \begin{center}
 \begin{tikzpicture}[x=1.1cm,y=1cm]
@@ -96,5 +133,10 @@ $B = 2,1 \mid 2,1$（$A = 2,1$, $K = 2$）。黒はコピー内、赤はコピ�
   \node[anchor=west,font=\small] at (4.2,-0.2) {合計 3};
 \end{tikzpicture}
 \end{center}
+
+\subsection*{次に活かすこと}
+\begin{itemize}
+  \item 繰り返し構造の数え上げは、\textbf{ブロック内} と \textbf{ブロック間} に分けると、ブロック間は位置の制約が消えて数えやすくなる。
+\end{itemize}
 
 \end{document}

@@ -1,13 +1,10 @@
-% abc128 C - Switches の手書きメモの再現（振り返りの文章は thinking.md）
+% abc128 C - Switches の手書きメモの再現と振り返り
 % ビルド: tools/build_thinking.sh abc128/c --preview
 \documentclass[a4paper]{article}
 \usepackage[margin=1.2cm]{geometry}
 \usepackage{handmemo}
+\usepackage{hyperref}
 \pagestyle{empty}
-
-% 1〜2 字だけ読めない所を、行の中に小さく置く（中身は推測で埋めない。\hwunread と同じ灰色の点線枠）
-\def\hwunreadmark(#1,#2){\node[anchor=west,draw=gray,dashed,rounded corners=1pt,text=gray,
-  font=\sffamily\footnotesize,minimum width=0.5cm,minimum height=0.55cm,inner sep=0pt] at (#1,#2) {?};}
 
 \begin{document}
 
@@ -104,21 +101,48 @@
   \redpen(0.8,23.2){提出 1 回目は C++ のコードを言語 Python のまま出して CE。\\同じ分に C++23 で出し直して AC}
 \end{memopage}
 
-% ---------------------------------------------------------------- 図
+% ---------------------------------------------------------------- 振り返り
 \clearpage
-\section*{図: サンプル 1 の 4 通り}
-電球 1 = スイッチ \{1,2\} が偶数個、電球 2 = スイッチ \{2\} が奇数個。
+\section*{abc128 C --- Switches}
+
+\begin{itemize}
+  \item 問題: \url{https://atcoder.jp/contests/abc128/tasks/abc128_c}
+  \item 提出（2026-08-06）:
+    \href{https://atcoder.jp/contests/abc128/submissions/78154478}{CE}（C++ のコードを Python で提出）→
+    \href{https://atcoder.jp/contests/abc128/submissions/78154485}{AC}（C++23）
+  \item 手書き原本: \texttt{Box/Photo Backup/手書き/atcoder/abc128/c/}（\texttt{20260925\_174812.jpg} の 1 枚、撮影 2026-09-25。前の 1 ページが再現。赤は後から入れた振り返り、灰色の点線枠「?」は判読できなかった字）
+  \item 清書: \texttt{explanation.md}
+\end{itemize}
+
+\subsection*{メモで考えたこと}
+メモでは、N 個のスイッチ・M 個の電球、電球 $i$ は $k_i$ 個のスイッチ $s_{i1}, \dots, s_{ik_i}$ につながる、と整理し、
+点灯条件を「$(s_{i1}, \dots, s_{ik_i}$ のうち on の個数$) \bmod 2 = p_i$」と式にした。
+入力形式を書き写し、サンプル \verb|2 2 / 2 1 2 / 1 2 / 0 1| を「電球 1 はスイッチ 1, 2 のうち偶数個 on、電球 2 はスイッチ 2 が奇数個 on」と読んで、
+条件を満たす組を手で探した。メモは問題の読み取りまでで、解法（全探索）はメモに書いていない。
+
+\subsection*{つまずき}
+\begin{itemize}
+  \item \textbf{CE}: C++ のコードを言語 Python のまま提出した（同じ分に C++23 で出し直して AC）。
+  \item 解法の根拠（$N \leq 10$ だから $2^N \leq 1024$ 通りを全部試せる）がメモに無い。
+\end{itemize}
+
+\subsection*{正しい考え方}
+スイッチの on/off を $N$ ビットの整数 \verb|bit| で表し、$\mathtt{bit} = 0, \dots, 2^N-1$ を全部試す。
+各電球について on のスイッチ数の偶奇が $p_i$ と一致するかを見る。$O(2^N \cdot \sum k_i)$。
+詳しくは \texttt{explanation.md}。
+
+サンプル 1（電球 1 = スイッチ \{1,2\} が偶数個、電球 2 = スイッチ \{2\} が奇数個）の 4 通りを並べると次のとおり。
 
 \begin{center}
 \begin{tikzpicture}[x=1.6cm,y=-0.62cm]
-  \node[font=\small] at (0,0) {\texttt{bit}};
+  \node[font=\small] at (0,0) {{\ttfamily bit}};
   \node[font=\small] at (1,0) {SW1};
   \node[font=\small] at (2,0) {SW2};
   \node[font=\small] at (3.3,0) {電球 1（偶）};
   \node[font=\small] at (4.9,0) {電球 2（奇）};
   \draw (-0.4,0.5) -- (5.7,0.5);
-  \foreach \b/\x/\y/\l/\r/\ok in {0/off/off/{0 ○}/{0 ×}/0, 1/on/off/{1 ×}/{0 ×}/0, 2/off/on/{1 ×}/{1 ○}/0, 3/on/on/{2 ○}/{1 ○}/1} {
-    \node[font=\small] at (0,\b+1) {\texttt{\b}};
+  \foreach \b/\x/\y/\l/\r in {0/off/off/{0 ○}/{0 ×}, 1/on/off/{1 ×}/{0 ×}, 2/off/on/{1 ×}/{1 ○}, 3/on/on/{2 ○}/{1 ○}} {
+    \node[font=\small] at (0,\b+1) {{\ttfamily \b}};
     \node[font=\small] at (1,\b+1) {\x};
     \node[font=\small] at (2,\b+1) {\y};
     \node[font=\small] at (3.3,\b+1) {\l};
@@ -128,5 +152,11 @@
   \node[redpen,anchor=west,font=\small] at (5.8,4) {全電球が点く → 答え 1};
 \end{tikzpicture}
 \end{center}
+
+\subsection*{次に活かすこと}
+\begin{itemize}
+  \item メモに問題を書き写したら、\textbf{制約を見て計算量の方針を 1 行書く}（ここでは「$N \leq 10$ → bit 全探索」）。
+  \item 提出前に言語の選択を確認する（\verb|acsub| を使えば拡張子から自動で決まる）。
+\end{itemize}
 
 \end{document}

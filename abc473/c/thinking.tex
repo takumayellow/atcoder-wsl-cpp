@@ -1,14 +1,10 @@
-% abc473 C - Change Schools の手書きメモの再現（振り返りの文章は thinking.md）
+% abc473 C - Change Schools の手書きメモの再現と振り返り
 % ビルド: tools/build_thinking.sh abc473/c --preview
 \documentclass[a4paper]{article}
 \usepackage[margin=1.2cm]{geometry}
 \usepackage{handmemo}
+\usepackage{hyperref}
 \pagestyle{empty}
-
-% \hwbag(cx,cy)(rx,ry): 上が開いた袋（クラス）。handmemo.sty に無いのでここで定義
-\makeatletter
-\def\hwbag(#1,#2)(#3,#4){\draw[ink,hand,line width=0.7pt] (#1,#2) ++(210:{#3} and {#4}) arc[start angle=210,end angle=-30,x radius=#3,y radius=#4];}
-\makeatother
 
 \begin{document}
 
@@ -53,21 +49,44 @@
   \redarrow(9.2,15.0)(9.6,14.5)
 \end{memopage}
 
-% ---------------------------------------------------------------- 図
+% ---------------------------------------------------------------- 振り返り
 \clearpage
-\section*{図: 喜ぶクラスの条件 $c_i \geq M-1$}
-例: 人数 5, 4, 2, 5, 3（$M=5$）。赤の点線（$M-1$）以上のクラスを数える。
+\section*{abc473 C --- Change Schools}
+
+\begin{itemize}
+  \item 問題: \url{https://atcoder.jp/contests/abc473/tasks/abc473_c}
+  \item 提出（2026-08-29, Python）:
+    \href{https://atcoder.jp/contests/abc473/submissions/78822723}{WA} →
+    \href{https://atcoder.jp/contests/abc473/submissions/78825493}{AC}
+  \item 手書き原本: \texttt{Box/Photo Backup/手書き/atcoder/abc473/c/}（\texttt{20260925\_174830.jpg} の 1 枚。撮影 2026-09-25。前の 1 ページが再現。赤は後から入れた振り返り）
+\end{itemize}
+
+\subsection*{メモで考えたこと}
+メモでは、クラスを袋として描いて「K class / N 人」「人数 max のクラス」「count」を置き、
+高橋くんが入るとそのクラスが $+1$ になることを書いた。そのうえで「class num sort $\to$ top, next ...」と並べ、
+「top, top $-1$ の個数」と結論を書いた。この結論（人数が max か max $-1$ のクラスの数）は正しい。
+
+\subsection*{つまずき}
+\begin{itemize}
+  \item \textbf{WA}: コードでは「top $-1$」を\textbf{「2 番目に大きい人数」}として数えていた（\verb|b[-2]|）。
+    2 番目に大きい人数が max $-1$ より小さいとき、そのクラスに入っても max のクラスに負けるので数えてはいけない。
+    メモの「top $-1$」は値としての max $-1$ なのに、コードで「順位としての 2 番目」に読み替えてしまった。
+  \item \textbf{AC 版にも潜在的なバグがある}: \verb|b = list(set(a))| はソートされる保証がない。
+    小さい整数ではたまたま昇順に並ぶが、\verb|list(set([1, 8]))| は \verb|[8, 1]| になる。
+    実際に \texttt{10 3 / 1 1 1 1 1 1 1 1 2 3}（人数 8, 1, 1）を AC 版に入れると \textbf{2} を出す（正しくは 1）。
+    テストケースにこの形が無かったので通っただけ。
+\end{itemize}
+
+\subsection*{正しい考え方}
+各クラスの人数を $c_i$、$M = \max c_i$ とする。クラス $i$ に入ると $c_i + 1$ になり、ほかのクラスは最大 $M$ のまま。
+喜ぶ条件は $c_i + 1 \geq M$、つまり $\boldsymbol{c_i \geq M - 1}$。これを満たすクラスを数えるだけでよい（ソートも set も要らない）。
+たとえば人数 5, 4, 2, 5, 3（$M=5$）なら、赤の点線（$M-1$）以上のクラスを数える。
 
 \begin{center}
 \begin{tikzpicture}[x=1cm,y=0.32cm]
-  % 例: 人数 5, 4, 2, 5, 3（M = 5）
-  \foreach \v [count=\i] in {5,4,2,5,3} {
-    \pgfmathsetmacro{\ok}{\v >= 4 ? 1 : 0}
-    \ifdim\ok pt>0pt
-      \fill[redpen!25] (\i*1.3-0.45,0) rectangle (\i*1.3+0.45,\v);
-    \else
-      \fill[gray!25] (\i*1.3-0.45,0) rectangle (\i*1.3+0.45,\v);
-    \fi
+  % 例: 人数 5, 4, 2, 5, 3（M = 5）。M-1 = 4 以上のクラスを赤で塗る
+  \foreach \v/\col [count=\i] in {5/redpen!25,4/redpen!25,2/gray!25,5/redpen!25,3/gray!25} {
+    \fill[\col] (\i*1.3-0.45,0) rectangle (\i*1.3+0.45,\v);
     \draw (\i*1.3-0.45,0) rectangle (\i*1.3+0.45,\v);
     \node[below] at (\i*1.3,0) {\small $c_{\i}=\v$};
   }
@@ -75,5 +94,21 @@
   \draw[redpen,dashed,line width=0.9pt] (0.5,4) -- (7.3,4) node[right] {\small $M-1 = 4$（ここ以上なら喜ぶ）};
 \end{tikzpicture}
 \end{center}
+
+\begin{verbatim}
+n, k = map(int, input().split())
+c = [0] * k
+for x in map(int, input().split()):
+    c[x - 1] += 1
+m = max(c)
+print(sum(1 for v in c if v >= m - 1))
+\end{verbatim}
+
+\subsection*{次に活かすこと}
+\begin{itemize}
+  \item メモの結論を\textbf{条件式（$c_i \geq M - 1$）}の形で書いてからコードにする。
+    「top $-1$ の個数」のような言葉のままだと、コードで別の意味に化ける。
+  \item 並び順が欲しいときは \verb|sorted(set(a))|。\verb|set| の順序に頼らない。
+\end{itemize}
 
 \end{document}

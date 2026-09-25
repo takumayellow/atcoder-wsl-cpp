@@ -1,8 +1,9 @@
-% keyence2019 B - KEYENCE String の手書きメモの再現（振り返りの文章は thinking.md）
+% keyence2019 B - KEYENCE String の手書きメモの再現と振り返り
 % ビルド: tools/build_thinking.sh keyence2019/b --preview
 \documentclass[a4paper]{article}
 \usepackage[margin=1.2cm]{geometry}
 \usepackage{handmemo}
+\usepackage{hyperref}
 \pagestyle{empty}
 
 % 取り除く区間の「○」（原本では文字より少し大きい丸）
@@ -49,21 +50,55 @@
   \redbox(0.6,15.2)(17.4,18.2)
 \end{memopage}
 
-% ---------------------------------------------------------------- 図
+% ---------------------------------------------------------------- 振り返り
 \clearpage
-\section*{図: 分け目 $k$ と取り除く区間}
-$S$ が \texttt{keyence[:k]} で始まり \texttt{keyence[k:]} で終わるかを $k=0,\dots,7$ で見る（例は $S=$ \texttt{keyofscience}, $k=3$）。
+\section*{keyence2019 B --- KEYENCE String}
+
+\begin{itemize}
+  \item 問題: \url{https://atcoder.jp/contests/keyence2019/tasks/keyence2019_b}
+  \item 提出（2026-08-04, Python）:
+    \href{https://atcoder.jp/contests/keyence2019/submissions/78117551}{AC}（1 回目で AC）
+  \item 手書き原本: \texttt{Box/Photo Backup/手書き/atcoder/keyence2019/b/}（\texttt{20260925\_174816.jpg} の 1 枚。撮影 2026-09-25。前の 1 ページが再現。赤は後から入れた振り返り）
+\end{itemize}
+
+\subsection*{つまずき}
+\begin{itemize}
+  \item \textbf{メモ}: 取り除く区間（○）が keyence のどこに入るかを並べ、「前半 $+$ 後半に分ける位置は 8 通りしかない」形まで見えていた。
+    ただし書いた分け目は 5 つで、$k=0$（先頭を取る）・$k=4$・$k=7$（末尾を取る）が無い。
+  \item \textbf{提出}: メモの「分け方 8 通り」ではなく、取り除く区間 $[i,j)$ を $O(N^2)$ 通り全部試した（$N \leq 100$ なので間に合う）。
+    ループが \verb|for j in range(i, l)| で $j = l$ を試さないため、末尾を取り除く形が抜けている。
+    \verb|keyencex| や \verb|keyenceabc| で \verb|NO| を出す（正しくは \verb|YES|）。実際に動かして確かめた。
+    テストケースにこの形が無く AC になった。\verb|range(i, l + 1)| にすれば通る。
+\end{itemize}
+
+\subsection*{正しい考え方}
+$k = 0, \dots, 7$ について、$S$ が \verb|keyence[:k]| で始まり \verb|keyence[k:]| で終わるかを見る。$O(8N)$。
+下の図は $S=$ \texttt{keyofscience}, $k=3$ の例。
 
 \begin{center}
 \begin{tikzpicture}[x=0.62cm,y=0.62cm]
   % 例: S = keyofscience, k = 3
   \foreach \c [count=\i] in {k,e,y,o,f,s,c,i,e,n,c,e} {\node[draw,minimum size=0.6cm,font=\ttfamily] at (\i,0) {\c};}
-  \draw[decorate,decoration={brace,amplitude=5pt}] (0.6,0.55) -- (3.4,0.55) node[midway,above=6pt] {\small \texttt{keyence[:3]} で始まる};
-  \draw[decorate,decoration={brace,amplitude=5pt}] (8.6,0.55) -- (12.4,0.55) node[midway,above=6pt] {\small \texttt{keyence[3:]} で終わる};
+  \draw[decorate,decoration={brace,amplitude=5pt}] (0.6,0.55) -- (3.4,0.55) node[midway,above=6pt] {\small {\ttfamily keyence[:3]} で始まる};
+  \draw[decorate,decoration={brace,amplitude=5pt}] (8.6,0.55) -- (12.4,0.55) node[midway,above=6pt] {\small {\ttfamily keyence[3:]} で終わる};
   \draw[redpen,line width=1.2pt] (3.6,-0.55) -- (8.4,-0.55);
-  \node[redpen,below] at (6,-0.55) {\small ここ（\texttt{ofsci}）を 1 か所取り除く};
+  \node[redpen,below] at (6,-0.55) {\small ここ（{\ttfamily ofsci}）を 1 か所取り除く};
   \node[anchor=west] at (13.2,0) {\small $k=0$ なら先頭、$k=7$ なら末尾を取る};
 \end{tikzpicture}
 \end{center}
+
+\begin{verbatim}
+s = input()
+t = "keyence"
+print("YES" if any(s.startswith(t[:k]) and s.endswith(t[k:]) for k in range(8)) else "NO")
+\end{verbatim}
+
+\subsection*{次に活かすこと}
+\begin{itemize}
+  \item メモで見つけた「分け方の数が小さい」という構造は、そのまま計算量の削減に使える。
+    制約が小さくて全探索で通るときも、メモの発想をコードに移せるかを一度考える。
+  \item 分け目を並べるときは、両端（$k=0$ と $k=7$）を最初に書く。
+  \item 区間 $[i,j)$ を全部試すときは、\verb|range| の終わりが「空の区間」「末尾まで」を含むか確かめ、端の入力（\verb|keyencex|）で試してから出す。
+\end{itemize}
 
 \end{document}

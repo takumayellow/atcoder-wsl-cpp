@@ -1,8 +1,9 @@
-% arc127 A - Leading 1s の手書きメモの再現（振り返りの文章は thinking.md）
+% arc127 A - Leading 1s の手書きメモの再現と振り返り
 % ビルド: tools/build_thinking.sh arc127/a --preview
 \documentclass[a4paper]{article}
 \usepackage[margin=1.2cm]{geometry}
 \usepackage{handmemo}
+\usepackage{hyperref}
 \pagestyle{empty}
 
 % 小さい丸囲み（f(i) の表に多い）
@@ -158,10 +159,45 @@
     桁が増えるたびに区間の切り方が変わり、表からは式にまとまらなかった}
 \end{memopage}
 
-% ---------------------------------------------------------------- 図
+% ---------------------------------------------------------------- 振り返り
 \clearpage
-\section*{図: 先頭 $k$ 桁が 1 の数の区間}
-$k$ ごとに、先頭が $k$ 個の 1 で始まる数は $1, 10, 100, \dots$ 個の連続した区間になる。
+\section*{arc127 A --- Leading 1s}
+
+\begin{itemize}
+  \item 問題: \url{https://atcoder.jp/contests/arc127/tasks/arc127_a}
+  \item 提出: 自分（yellowred）の提出は無し。解法と \texttt{main.py} は \texttt{explanation.md}。そこに載っている
+    \href{https://atcoder.jp/contests/arc127/submissions/57430799}{57430799} は、参考にした他の人（kemuri37）の AC
+  \item 手書き原本: \texttt{Box/Photo Backup/手書き/atcoder/arc127/a/}（撮影 2026-09-25、2 枚。前の 2 ページが再現。赤は後から入れた振り返り）
+  \begin{itemize}
+    \item \texttt{20260925\_174906.jpg}: $f(i)$ の表（$i = 1$〜$30$、$100$〜$110$、$1000$〜$1010$、$1100$〜$1109$）
+    \item \texttt{20260925\_174909.jpg}: $1111$〜$1300$ 付近を区間に切った数え上げ
+  \end{itemize}
+\end{itemize}
+
+\subsection*{メモで考えたこと}
+\begin{enumerate}
+  \item $f(x)$ = $x$ の先頭から連続する 1 の個数、として $\sum_{i=1}^{N} f(i)$ を求める、と書いた。
+  \item $i = 1$〜$30$、$100$〜$110$、$1000$〜$1010$、$1100$〜$1109$ と $f(i)$ を手で並べ、区間ごとの増え方（$+2$、$+4$、$+9$、$10$ …）を書き込んだ。
+  \item 2 枚目では $1111$〜$1119$、$1120$〜$1130$、$1131$〜$1200$、$1201$〜$1300$ と区間を切り、区間ごとの和（$3$、$2$ …、$20$、$10$）を数えた。
+\end{enumerate}
+「先頭が 1 で始まる数はひとまとまりの区間になる」ことを、具体例から見つけにいく流れ。
+
+\subsection*{つまずき}
+\begin{itemize}
+  \item 具体例の表から規則を探すやり方は、桁数が増えるたびに区間の切り方が変わり、一般式にまとまらなかった。
+    メモは数え上げの途中（$1300$ 付近）で止まっている。
+  \item 見方を変える一歩（$f(x)$ を「先頭 $k$ 桁がすべて 1 か」の 0/1 の和に分ける）はメモには出てこない。
+  \item 表の中の区間和にも合わないものがある。$11$〜$20$ の和は $2 + 1\times 8 + 0 = 10$、
+    $1201$〜$1300$ は $100$ 個すべて $f = 1$ なので和は $100$（Python で $f$ を直接足して確かめた）。
+\end{itemize}
+
+\subsection*{正しい考え方}
+\[ f(x) = \sum_{k \geq 1} [\,x \text{ の先頭 } k \text{ 桁がすべて } 1\,] \]
+$k$ ごとに「先頭が $\underbrace{11\cdots1}_{k}$ の数」を数えればよく、
+それは後ろに続く桁数 $i$ ごとに連続した区間 $[\,11\cdots1 \times 10^i,\ 11\cdots1 \times 10^i + 10^i - 1\,]$（ちょうど $10^i$ 個）になる。
+区間が $N$ をまたぐところだけ $N - L + 1$ 個を足す。詳しくは \texttt{explanation.md}。
+
+$k = 1, 2, 3, 4$ の区間を 1 行ずつ並べると次のようになる。
 
 \begin{center}
 \begin{tikzpicture}[x=3.3cm,y=0.7cm]
@@ -177,5 +213,11 @@ $k$ ごとに、先頭が $k$ 個の 1 で始まる数は $1, 10, 100, \dots$ �
   \node[redpen,anchor=west,align=left] at (0.1,-0.9) {\small 各行の塊は $1, 10, 100, \dots$ 個。$x$ が $c$ 行に現れる $\Leftrightarrow f(x) = c$};
 \end{tikzpicture}
 \end{center}
+
+\subsection*{次に活かすこと}
+\begin{itemize}
+  \item 「各 $x$ の値 $f(x)$ の総和」で詰まったら、$f$ を 0/1 の条件の和に分解して、条件ごとの寄与を数える（主客転倒）。
+  \item 表を書いて規則を探すのは、2〜3 桁で規則が見えなければ打ち切って、分解の方針に切り替える。
+\end{itemize}
 
 \end{document}
