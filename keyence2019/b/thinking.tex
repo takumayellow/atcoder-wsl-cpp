@@ -1,0 +1,69 @@
+% keyence2019 B - KEYENCE String の手書きメモの再現（振り返りの文章は thinking.md）
+% ビルド: tools/build_thinking.sh keyence2019/b --preview
+\documentclass[a4paper]{article}
+\usepackage[margin=1.2cm]{geometry}
+\usepackage{handmemo}
+\pagestyle{empty}
+
+% 取り除く区間の「○」（原本では文字より少し大きい丸）
+\newcommand{\hwo}{{\huge ○}}
+% 原本の英字は方眼 2 マスほどの高さなので、このページの英字は一回り大きくする
+\newcommand{\hwk}[1]{{\LARGE #1}}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1 枚目
+\begin{memopage}{20260925\_174816.jpg}
+  \hw(1.4,1.9){N日間旅行}
+  \hw(5.7,1.9){長さNの文字列S}
+  \redpen(10.6,1.3){\small 見出しの語は KEYENCE String の\\\small 問題文には無い}
+
+  % 1 行目: ○key ? ence○
+  \hw(1.0,4.75){\hwo} \hw(1.8,4.75){\hwk{key}}
+  \hwunread(3.5,4.75){○かe}
+  \hw(6.0,4.75){\hwk{ence}} \hw(7.8,4.75){\hwo}
+
+  % 2 行目: ○k○ eyence○（eyence に下線）
+  \hw(0.9,7.0){\hwo} \hw(1.8,7.0){\hwk{k}} \hw(2.6,7.0){\hwo}
+  \hw(4.7,7.0){\hwk{eyence}} \hw(7.1,7.0){\hwo}
+  \hwline(4.75,7.6)(7.0,7.5)
+
+  % 3 行目: ○keyen○ce○（最後の○は少し上）
+  \hw(0.7,9.0){\hwo} \hw(2.0,9.0){\hwk{keyen}} \hw(4.3,9.0){\hwo} \hw(5.3,9.0){\hwk{ce}}
+  \hw(6.4,8.5){\hwo}
+
+  % 4 行目: ○key enc○e○
+  \hw(0.5,10.95){\hwo} \hw(2.0,10.95){\hwk{key}} \hw(3.6,10.95){\hwk{enc}} \hw(5.0,10.95){\hwo} \hw(6.1,10.95){\hwk{e}} \hw(6.9,10.95){\hwo}
+
+  % 5 行目: ○ke○ yence○（yence に下線）
+  \hw(0.9,13.2){\hwo} \hw(1.8,13.2){\hwk{ke}} \hw(2.7,13.2){\hwo}
+  \hw(3.9,13.2){\hwk{yence}} \hw(6.1,13.2){\hwo}
+  \hwline(3.9,13.8)(5.9,13.75)
+
+  \redpen(9.0,5.6){取り除けるのは 1 か所だけ。\\S $=$ keyence[:k] $+$（何か）$+$ keyence[k:]\\分け目 k は 0〜7 の 8 通りしかない}
+  \redpen(9.0,9.3){ここに書いた分け目は k=1, 5, 6, 2\\（1 行目は真ん中の字しだいで k=3）。\\k=0（○keyence）, 4, 7（keyence○）が無い}
+  \redarrow(8.9,9.6)(7.8,10.7)
+
+  \redpen(0.8,16.2){提出（1 回目で AC）は分け目 8 通りではなく、取り除く区間 [i, j) を\\全部試す O(N$^2$) だった。ただし {\hwlfont for j in range(i, l)} で j が l に届かず、\\末尾を取り除く形（k=7, keyence○）を試していない}
+  \redpen(0.8,17.5){→ {\hwlfont keyencex} で NO を出す（正しくは YES）。テストにこの形が無く AC した}
+  \redbox(0.6,15.2)(17.4,18.2)
+\end{memopage}
+
+% ---------------------------------------------------------------- 図
+\clearpage
+\section*{図: 分け目 $k$ と取り除く区間}
+$S$ が \texttt{keyence[:k]} で始まり \texttt{keyence[k:]} で終わるかを $k=0,\dots,7$ で見る（例は $S=$ \texttt{keyofscience}, $k=3$）。
+
+\begin{center}
+\begin{tikzpicture}[x=0.62cm,y=0.62cm]
+  % 例: S = keyofscience, k = 3
+  \foreach \c [count=\i] in {k,e,y,o,f,s,c,i,e,n,c,e} {\node[draw,minimum size=0.6cm,font=\ttfamily] at (\i,0) {\c};}
+  \draw[decorate,decoration={brace,amplitude=5pt}] (0.6,0.55) -- (3.4,0.55) node[midway,above=6pt] {\small \texttt{keyence[:3]} で始まる};
+  \draw[decorate,decoration={brace,amplitude=5pt}] (8.6,0.55) -- (12.4,0.55) node[midway,above=6pt] {\small \texttt{keyence[3:]} で終わる};
+  \draw[redpen,line width=1.2pt] (3.6,-0.55) -- (8.4,-0.55);
+  \node[redpen,below] at (6,-0.55) {\small ここ（\texttt{ofsci}）を 1 か所取り除く};
+  \node[anchor=west] at (13.2,0) {\small $k=0$ なら先頭、$k=7$ なら末尾を取る};
+\end{tikzpicture}
+\end{center}
+
+\end{document}

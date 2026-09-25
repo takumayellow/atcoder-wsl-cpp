@@ -1,0 +1,127 @@
+% agc017 A - Biscuits の手書きメモの再現（振り返りの文章は thinking.md）
+% ビルド: tools/build_thinking.sh agc017/a --preview
+\documentclass[a4paper]{article}
+\usepackage[margin=1.2cm]{geometry}
+\usepackage{handmemo}
+\pagestyle{empty}
+
+% 袋の絵（U 字）: \hwbag(左上 x, 左上 y)(右下 x, 右下 y)
+\def\hwbag(#1,#2)(#3,#4){\draw[ink,hand,line width=0.7pt] (#1,#2) .. controls (#1,#4+0.3) and (#3,#4+0.3) .. (#3,#2);}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1 枚目（定式化）
+\begin{memopage}{20260925\_174844.jpg}
+  \hw(0.3,1.3){問}
+  \hwunread(1.1,1.3){問の次の 1 文字}
+
+  \hw(0.7,3.2){A --- Biscuits}
+
+  \hw(1.9,4.3){N}
+  \hwcircle(3.5,4.2)(0.3,0.3)
+  \hwunread(4.1,3.7){N の横の丸囲み}
+  \hwbag(1.7,4.8)(3.9,6.6)
+  \hwbag(4.2,4.6)(5.6,6.3)
+  \hwbag(6.3,4.6)(7.9,6.5)
+  \hw(6.5,5.4){$A_i$}
+  \hwbag(8.6,4.6)(9.7,6.0)
+  \hw(10.2,5.5){-\ \ .}
+  \hw(7.2,7.4){$i$}
+
+  \hwstrike(1.3,10.7){$A_i$}
+  \hw(2.9,10.6){/}
+  \hwstrike(3.6,10.6){$A_i \% 2 = P$}
+  \redpen(9.9,9.3){1 袋ずつの偶奇では決まらない\\→ 選んだ袋の「和」の偶奇に直す}
+  \redarrow(10.9,10.1)(8.0,12.4)
+
+  \hwm(2.6,13.1){\Bigl(\sum c_k A_i\Bigr) \% 2 = P}
+  \hwm(2.6,14.9){c_k = \begin{cases} 1 \\ 0 \end{cases}}
+  \hw(0.6,17.0){count$\,(\,c = [\ \ ]\,)$}
+
+  \hwline(9.9,11.8)(9.8,18.0)
+  \hw(11.0,12.4){2\ \ 0}
+  \hw(11.0,13.2){1\ \ 3}
+  \hwcircle(11.9,14.9)(0.45,0.55)
+  \hw(11.65,14.9){1}
+  \hwcircle(13.2,14.9)(0.4,0.5)
+  \hw(12.95,14.9){3}
+  \hwline(10.9,14.2)(13.7,14.2) \hwline(10.9,15.7)(13.7,15.7)
+  \hwline(10.9,14.2)(11.0,15.7) \hwline(13.7,14.2)(13.8,15.7)
+  \hwunread(10.3,16.6){消した 1 文字}
+  \hw(12.4,17.4){(bother nothing}
+  \redpen(10.3,18.5){奇数 2 つ → 両方選ぶか何も選ばないか\\→ 2 通り $= 2^{N-1}$（サンプルの答え 2）}
+
+  \hw(8.9,19.4){odd は 2 つ}
+  \hw(1.3,20.5){$P = 0$ :}
+  \hw(3.5,20.3){sum : even}
+
+  \hw(2.4,22.5){$2^N$ : とおり}
+  \hw(6.2,22.0){$2^{50}$}
+  \hwline(7.3,21.3)(8.1,22.4) \hwline(8.1,21.3)(7.4,22.5)
+  \redpen(9.2,22.4){N は 50 まで。全部試すのは無理\\→ 場合分けで数える（次のページ）}
+\end{memopage}
+
+% ---------------------------------------------------------------- 2 枚目（場合分けと証明）
+\begin{memopage}{20260925\_174809.jpg}
+  \hw(2.1,2.1){1\ \ 1}
+  \hwline(2.3,2.55)(3.0,2.5)
+  \hw(2.0,2.9){50}
+  \hwline(1.9,3.4)(2.9,3.35)
+  \hw(4.8,2.8){0}
+  \redpen(6.2,2.0){全部偶数で $P=1$ → 0 通り}
+
+  \hw(2.2,4.4){3\ \ 0}
+  \hwline(1.9,4.9)(3.4,4.9)
+  \hw(2.1,5.5){1\ \ 1\ \ 1}
+  \hwline(1.95,5.0)(1.95,6.0) \hwline(3.1,5.0)(3.1,6.0) \hwline(2.0,6.0)(3.1,6.0)
+  \redpen(6.2,5.0){奇数 3 つ、$P=0$ → 答え 4 $= 2^{3-1}$}
+
+  \hw(0.3,7.5){$\forall A_i = $ odd}
+  \hw(4.2,7.5){\large どう選んでもよい}
+  \hw(8.2,7.5){$P=0 : 2^N$}
+  \hw(11.3,7.5){$P=1 : 0$}
+  \redpen(9.6,6.5){この結論は「全部 even」のとき}
+  \redarrow(9.5,6.6)(2.2,7.1)
+
+  \hw(0.7,9.2){$A_i$ has odd}
+  \hwunread(3.9,9.2){消した字}
+  \hw(6.6,9.1){$\exists k$ s.t. $A_k = $ odd}
+  \redpen(12.0,9.1){← 前の行はこの否定\\（∀ even）}
+
+  \hw(0.5,10.6){\large $k$ 番目の袋を選ぶ以外の $N-1$ 個の袋の選び方は $2^{N-1}$}
+  \hw(0.2,12.5){\large これらの $N-1$ 個の袋から選んだ袋のビスケットの枚数}
+  \hwstrike(10.5,12.5){\large をS}
+  \hw(11.6,12.5){\large の}
+  \hw(0.3,13.6){\large 合計を $S$ とすると}
+
+  \hw(1.0,15.3){\large $S$ が奇数であれば\ $k$ 番目の袋を選ぶと合計は偶数，}
+  \hwline(1.4,15.75)(4.4,15.75)
+  \hw(0.6,16.4){\large 選ばないと合計は奇数，}
+  \hw(0.6,17.7){\large $S$ が偶数であれば，$k$ 番目の袋を選ぶと合計は奇数，}
+  \hw(0.6,18.8){\large 選ばないと合計は偶数，}
+  \hw(0.1,20.1){\large であるから，これらの $2^{N-1}$ 通り}
+
+  \redpen(0.8,21.8){どちらの $P$ でも、$k$ 番目を選ぶかどうかはちょうど 1 通りに決まる\\→ 奇数の袋があれば答えは $2^{N-1}$（Python で 1 回目の提出が AC）}
+  \redbox(4.2,19.45)(6.3,20.75)
+\end{memopage}
+
+% ---------------------------------------------------------------- 図
+\clearpage
+\section*{図: 奇数の袋 $k$ を調整役にした場合分け}
+奇数の袋 $k$ を 1 つ取っておくと、残りの選び方と 1 対 1 に対応する。
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % 残り N-1 袋の選び方 → 和 S の偶奇 → k を選ぶか
+  \node[draw,rounded corners=2pt,align=center,minimum width=3.6cm] (rest) at (0,0) {残り $N-1$ 袋の選び方\\$2^{N-1}$ 通り};
+  \node[draw,rounded corners=2pt,minimum width=2.4cm] (odd) at (5,0.8) {$S$ が奇数};
+  \node[draw,rounded corners=2pt,minimum width=2.4cm] (even) at (5,-0.8) {$S$ が偶数};
+  \draw[-{Stealth}] (rest.east) -- (odd.west);
+  \draw[-{Stealth}] (rest.east) -- (even.west);
+  \node[anchor=west,align=left] at (7,0.8) {\small $P=0$: $k$ を選ぶ \quad $P=1$: 選ばない};
+  \node[anchor=west,align=left] at (7,-0.8) {\small $P=0$: 選ばない \quad $P=1$: $k$ を選ぶ};
+  \node[redpen] at (5,-1.9) {\small どの枝でも $k$ の扱いはちょうど 1 通り → 合計 $2^{N-1}$};
+\end{tikzpicture}
+\end{center}
+
+\end{document}

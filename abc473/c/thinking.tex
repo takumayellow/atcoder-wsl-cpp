@@ -1,0 +1,79 @@
+% abc473 C - Change Schools の手書きメモの再現（振り返りの文章は thinking.md）
+% ビルド: tools/build_thinking.sh abc473/c --preview
+\documentclass[a4paper]{article}
+\usepackage[margin=1.2cm]{geometry}
+\usepackage{handmemo}
+\pagestyle{empty}
+
+% \hwbag(cx,cy)(rx,ry): 上が開いた袋（クラス）。handmemo.sty に無いのでここで定義
+\makeatletter
+\def\hwbag(#1,#2)(#3,#4){\draw[ink,hand,line width=0.7pt] (#1,#2) ++(210:{#3} and {#4}) arc[start angle=210,end angle=-30,x radius=#3,y radius=#4];}
+\makeatother
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1 枚目
+\begin{memopage}{20260925\_174830.jpg}
+  % クラスを袋で描いた
+  \hw(4.3,2.4){生徒 $i$}
+  \hwbag(3.1,3.75)(0.65,0.85)
+  \hwbag(5.5,3.9)(0.55,0.85)
+  \hwbag(7.8,4.1)(0.5,0.6)
+  \hw(5.0,5.05){\normalsize $A_i$ class}
+  \hw(4.7,6.2){\LARGE K class}
+  \hw(4.8,7.45){N 人}
+
+  % 3 つ目の袋へ向けた矢印とその元の語
+  \draw[ink,hand,line width=0.7pt,-{Stealth[length=2mm]}] (8.55,2.75) to[bend right=25] (7.7,3.75);
+  \hwunread(8.5,2.2){矢印の元の語（「lidong」のように見える）}
+
+  \hw(8.6,4.1){人数max\ :\ \ 0}
+  \draw[ink,hand,line width=0.7pt,-{Stealth[length=2mm]}] (11.05,5.1) -- (11.05,4.6);
+  \hw(10.6,5.55){\normalsize count}
+  \hwline(9.2,4.7)(9.2,7.2)
+  \hw(8.7,8.3){人数最大のクラス}
+
+  % 高橋くんが入ると +1
+  \hw(1.4,10.75){+1}
+  \hwline(1.45,11.25)(2.3,11.25)
+  \redpen(3.0,10.2){入ったクラスは $c_i+1$、ほかは最大 $M$ のまま\\→ 喜ぶ条件は $c_i+1 \geq M$、つまり $c_i \geq M-1$}
+
+  % 並べて top, next ...
+  \hw(2.8,12.25){class num sort}
+  \hw(8.2,12.2){top}
+  \hwline(8.25,12.65)(9.4,12.65)
+  \hw(9.6,12.1){next\ ..}
+  \hwline(11.2,12.2)(12.0,12.15)
+  \hwline(13.55,12.0)(14.0,12.1)
+  \redpen(0.6,13.1){AC 版の {\hwlfont list(set(a))} は並びが保証されない\\人数 8, 1, 1 で 2 を出す（正しくは 1）}
+
+  \hw(7.1,14.1){top, top−1 の個数}
+  \redbox(6.9,13.45)(12.4,14.75)
+  \redpen(7.0,15.4){結論は合っている。top−1 は「値 max−1」のこと\\→ コードでは {\hwlfont b[-2]}（2 番目に大きい人数）と読んで WA}
+  \redarrow(9.2,15.0)(9.6,14.5)
+\end{memopage}
+
+% ---------------------------------------------------------------- 図
+\clearpage
+\section*{図: 喜ぶクラスの条件 $c_i \geq M-1$}
+例: 人数 5, 4, 2, 5, 3（$M=5$）。赤の点線（$M-1$）以上のクラスを数える。
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=0.32cm]
+  % 例: 人数 5, 4, 2, 5, 3（M = 5）
+  \foreach \v [count=\i] in {5,4,2,5,3} {
+    \pgfmathsetmacro{\ok}{\v >= 4 ? 1 : 0}
+    \ifdim\ok pt>0pt
+      \fill[redpen!25] (\i*1.3-0.45,0) rectangle (\i*1.3+0.45,\v);
+    \else
+      \fill[gray!25] (\i*1.3-0.45,0) rectangle (\i*1.3+0.45,\v);
+    \fi
+    \draw (\i*1.3-0.45,0) rectangle (\i*1.3+0.45,\v);
+    \node[below] at (\i*1.3,0) {\small $c_{\i}=\v$};
+  }
+  \draw[dashed] (0.5,5) -- (7.3,5) node[right] {\small $M = 5$};
+  \draw[redpen,dashed,line width=0.9pt] (0.5,4) -- (7.3,4) node[right] {\small $M-1 = 4$（ここ以上なら喜ぶ）};
+\end{tikzpicture}
+\end{center}
+
+\end{document}

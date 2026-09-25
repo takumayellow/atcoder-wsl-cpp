@@ -1,0 +1,132 @@
+% abc128 C - Switches の手書きメモの再現（振り返りの文章は thinking.md）
+% ビルド: tools/build_thinking.sh abc128/c --preview
+\documentclass[a4paper]{article}
+\usepackage[margin=1.2cm]{geometry}
+\usepackage{handmemo}
+\pagestyle{empty}
+
+% 1〜2 字だけ読めない所を、行の中に小さく置く（中身は推測で埋めない。\hwunread と同じ灰色の点線枠）
+\def\hwunreadmark(#1,#2){\node[anchor=west,draw=gray,dashed,rounded corners=1pt,text=gray,
+  font=\sffamily\footnotesize,minimum width=0.5cm,minimum height=0.55cm,inner sep=0pt] at (#1,#2) {?};}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1 枚目
+\begin{memopage}{20260925\_174812.jpg}
+  \hw(1.4,1.6){\LARGE C --- Switches}
+
+  \hw(1.5,3.2){\LARGE on, off}
+  \hw(4.8,3.1){\LARGE N個 switch}
+  \hw(8.9,3.0){\LARGE M個 電球}
+  \hw(5.6,3.9){1〜N}
+  \hw(9.6,3.9){1〜M}
+
+  \hw(1.1,5.7){\LARGE 電球$i$ : $k_i$個のスイッチ}
+  \hw(0.1,7.15){\huge 点灯 if $n(S_{i1}, S_{i2}, \cdots S_{ik_i}$ のうち}
+  \hw(10.7,7.2){\LARGE onの}
+  \hw(11.8,6.8){\large スイッチ}
+  \hw(13.6,7.1){\LARGE $)\ \%\ 2 == p_i$}
+  \hw(0.25,8.5){\LARGE 全ての電球が点灯するスイッチの on/off 組み合わせ個数}
+  \hw(0.4,10.2){\LARGE $\forall i,\ \ n($}
+
+  % 「onの」から下へ引いた線と k_i
+  \hwline(12.25,7.45)(12.25,11.1)
+  \hwline(11.6,8.9)(11.6,10.3)
+  \hwline(11.6,10.3)(12.4,10.45)
+  \hwline(12.4,10.45)(11.85,10.95)
+  \hwline(11.85,10.95)(13.0,10.6)
+  \hw(11.8,11.45){$k_i$}
+
+  \redpen(2.2,11.4){ここで制約（$N \leq 10$）を見れば\\$2^N \leq 1024$ 通りを全部試せば済むと分かる}
+  \redarrow(2.1,11.3)(1.6,10.6)
+
+  % 入力形式
+  \hw(1.0,12.2){N M}
+  \hw(1.0,12.8){$k_1\ s_{11}\ s_{12} \cdots s_{1k_1}$}
+  \hwline(1.3,13.1)(1.35,13.4)
+  \hw(1.2,13.7){$k_M\ s_{M1}\ s_{M2} \cdots s_{Mk_M}$}
+  \hw(1.4,14.2){$p_1$ 〜 $p_M$}
+
+  % サンプル 1
+  \hw(1.0,14.85){2 2}
+  \hw(1.0,15.45){2 1 {\normalsize 2}}
+  \hw(1.2,16.0){1 2}
+  \hw(1.3,16.55){0 1}
+  \hw(1.1,17.2){偶 奇}
+
+  \hw(3.4,15.0){N M}
+  \hw(3.4,15.55){$k_1\ s_{11}\ s_{12}$}
+  \hw(3.4,16.1){$k_2\ s_{21}$}
+  \hw(5.1,16.1){$s$}\hwline(5.05,16.35)(5.5,15.85)
+  \hw(3.3,16.65){$p$}\hwline(3.25,16.9)(3.75,16.4)
+  \hw(3.9,16.65){$p_1\ p_2$}
+
+  \hw(10.3,13.75){$\%\,2 == p_i$}
+  \hwunreadmark(12.7,13.05)
+  \hw(13.3,13.05){1,2}
+  \hw(12.8,13.75){(on, on)}
+
+  \hw(5.9,14.35){\large 電球1は次のスイッチ}
+  \hwunreadmark(9.85,14.35)
+  \hw(10.4,14.35){\large のうち}
+  \hw(11.6,14.35){\large 偶数個}
+  \hwline(11.6,14.75)(13.1,14.75)
+  \hw(13.4,14.35){\large on で点灯}
+  \hw(15.6,14.3){\large スイッチ 1,2}
+  \hw(7.1,15.3){2}
+  \hw(11.4,15.15){奇}
+  \hw(12.2,15.35){(on, on)}
+  \hw(17.2,15.2){2}
+
+  \redpen(6.4,17.3){サンプル 1 の答え (on, on) の 1 通りまで手で出せている}
+
+  % サンプル 2
+  \hw(1.5,18.3){2 3}
+  \hw(1.7,19.0){2 1 2}
+  \hw(2.0,19.6){1 1}
+  \hw(2.0,20.2){1 2}
+  \hw(1.9,20.8){0 0 1}
+  \hw(1.8,21.4){偶 偶 奇}
+  \hwline(1.55,18.85)(1.35,19.2)
+  \hwline(1.35,19.2)(1.4,20.2)
+  \hwline(1.4,20.2)(1.8,20.6)
+
+  \hw(4.4,18.3){電球1は 偶数個}
+  \hw(8.1,18.3){1,2}
+  \hw(5.5,19.0){2}
+  \hw(6.4,19.0){偶}
+  \hw(8.2,19.0){1}
+  \hw(5.5,19.7){3}
+  \hw(6.4,19.7){奇}
+  \hw(8.1,19.7){2}
+
+  \redpen(9.6,19.0){メモは問題の読み取りまで。\\解法（bit 全探索）は書いていない}
+  \redpen(0.8,23.2){提出 1 回目は C++ のコードを言語 Python のまま出して CE。\\同じ分に C++23 で出し直して AC}
+\end{memopage}
+
+% ---------------------------------------------------------------- 図
+\clearpage
+\section*{図: サンプル 1 の 4 通り}
+電球 1 = スイッチ \{1,2\} が偶数個、電球 2 = スイッチ \{2\} が奇数個。
+
+\begin{center}
+\begin{tikzpicture}[x=1.6cm,y=-0.62cm]
+  \node[font=\small] at (0,0) {\texttt{bit}};
+  \node[font=\small] at (1,0) {SW1};
+  \node[font=\small] at (2,0) {SW2};
+  \node[font=\small] at (3.3,0) {電球 1（偶）};
+  \node[font=\small] at (4.9,0) {電球 2（奇）};
+  \draw (-0.4,0.5) -- (5.7,0.5);
+  \foreach \b/\x/\y/\l/\r/\ok in {0/off/off/{0 ○}/{0 ×}/0, 1/on/off/{1 ×}/{0 ×}/0, 2/off/on/{1 ×}/{1 ○}/0, 3/on/on/{2 ○}/{1 ○}/1} {
+    \node[font=\small] at (0,\b+1) {\texttt{\b}};
+    \node[font=\small] at (1,\b+1) {\x};
+    \node[font=\small] at (2,\b+1) {\y};
+    \node[font=\small] at (3.3,\b+1) {\l};
+    \node[font=\small] at (4.9,\b+1) {\r};
+  }
+  \draw[redpen,line width=1pt,rounded corners=2pt] (-0.4,3.5) rectangle (5.7,4.5);
+  \node[redpen,anchor=west,font=\small] at (5.8,4) {全電球が点く → 答え 1};
+\end{tikzpicture}
+\end{center}
+
+\end{document}

@@ -1,20 +1,25 @@
 # 手書きメモの扱い
 
 紙に書いた考察メモ（スマホで撮影したもの）は、**原本の画像を Box に、読み解いた内容をこのリポジトリに**分けて置く。
-リポジトリには撮影画像・スキャンを入れない。読み解きは `thinking.tex` に書き、
-メモを**手書き風に描き直したページ**と**振り返りのページ**を 1 つの `thinking.pdf` にまとめる。
-例: [abc048/b/thinking.pdf](../abc048/b/thinking.pdf)
+リポジトリには撮影画像・スキャン・手書きの PDF を入れない（写真と同じ扱いで Box に置く）。
+リポジトリに置くのは次の 2 つ。同じ文章を両方に書かない。
+
+- `thinking.tex` → `thinking.pdf`: メモを**手書き風に描き直したページ**（原本 1 枚 = 1 ページ）と、振り返りの図
+- `thinking.md`: **振り返りの文章**（問題 URL・提出・つまずき・正しい考え方・次に活かすこと）。GitHub でそのまま読め、検索できる
+
+例: [abc048/b/thinking.md](../abc048/b/thinking.md) と [thinking.pdf](../abc048/b/thinking.pdf)
 
 ## 置き場所
 
 | もの | 置き場所 | git |
 |------|----------|-----|
 | 撮影した原本（jpg） | `Box/Photo Backup/手書き/atcoder/<contest>/<問題>/<撮影ファイル名>.jpg` | 入れない |
-| 読み解き（メモの再現 + 振り返り） | `<問題フォルダ>/thinking.tex` | 入れる |
+| メモの再現（手書き風 + 赤ペン）と図 | `<問題フォルダ>/thinking.tex` | 入れる |
 | そのビルド結果 | `<問題フォルダ>/thinking.pdf` | 入れる（`slides.pdf` と同じ。TeX 環境なしで見られるように） |
+| 振り返りの文章 | `<問題フォルダ>/thinking.md` | 入れる |
 | 手書き風の共通スタイル | `tools/tex/handmemo.sty` | 入れる |
 | 清書した解説 | `<問題フォルダ>/explanation.md`（従来どおり） | 入れる |
-| スキャンしたメモ・図の書き出し（`memo.pdf`, `*.png` など） | `Box/Photo Backup/手書き/atcoder/<元のパス>` | 入れない |
+| スキャンしたメモ・手書きの PDF・図の書き出し（`memo.pdf`, `*.png` など） | `Box/Photo Backup/手書き/atcoder/<元のパス>` | 入れない |
 | 外部の参考資料・配布された問題 PDF | `Box/private/repo-assets/atcoder-wsl-cpp/<元のパス>` | 入れない |
 
 2026-09-25 に、それまで git に入っていた原本を上の置き場所へ移した（パスは元のまま）。
@@ -41,7 +46,7 @@
 4. 提出ソースは `curl -A "Mozilla/5.0" https://atcoder.jp/contests/<c>/submissions/<id>` で取る（UA が無いと 403）。
    WA/TLE → AC の順番と差分から、どこで間違えたかを読む
 
-## thinking.tex の構成
+## thinking.tex と thinking.md の構成
 
 ```bash
 tools/build_thinking.sh abc048/b --preview   # thinking.pdf を作り、全ページを PNG に描き出す
@@ -50,14 +55,20 @@ tools/build_thinking.sh abc048/b --preview   # thinking.pdf を作り、全ペ�
 lualatex でビルドする（`tools/tex/handmemo.sty` を読む）。フォントは Windows 標準の
 UD デジタル教科書体と Ink Free なので、Windows 側の TinyTeX でビルドする。
 
+`thinking.tex`（→ pdf）:
+
 1. **メモの再現（原本 1 枚 = 1 ページ）** — `memopage` 環境。方眼 18 × 26 cm、左上が (0,0)、下が +y。
    写真を見ながら、書いてある位置・順番のまま置く。ページの順番は撮影時刻ではなく**書いた内容の流れ**にする。
-2. **振り返り（1 ページ）** — 普通の組版で、次の 3 節。図が効くなら TikZ で 1 つ入れる。
-   - つまずき（どの提出がなぜ落ちたか。無ければ「無し」と書き、効いた発想を残す）
-   - 正しい考え方（短く。長くなるなら explanation.md に書いてリンクする）
-   - 次に活かすこと
+2. **図（任意・1 ページ）** — 振り返りに図が効くときだけ、TikZ で 1 つ。文章は md に書き、ここは見出しと 1〜2 行だけ。
 
-冒頭の箇条書きに、問題 URL・提出の流れ（各提出へのリンク）・Box の原本の場所を書く。
+`thinking.md`:
+
+- 冒頭の箇条書き: 問題 URL・提出の流れ（各提出へのリンク）・Box の原本の場所・`thinking.pdf` へのリンク
+- `## つまずき`（どの提出がなぜ落ちたか。無ければ「無し」と書き、効いた発想を残す）
+- `## 正しい考え方`（短く。長くなるなら explanation.md に書いてリンクする）
+- `## 次に活かすこと`
+
+数式は GitHub の `$...$` で書く。
 
 ### 色の決まり
 

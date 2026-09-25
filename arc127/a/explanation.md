@@ -6,7 +6,7 @@ AtCoder Regular Contest 127 / 300点 / 2021-09-25 開催
 - エディトリアル: https://atcoder.jp/contests/arc127/editorial
   （日本語版 [maroonrk_admin さん](https://atcoder.jp/contests/arc127/editorial/2686) /
   英語版 [evima さん](https://atcoder.jp/contests/arc127/editorial/2694)）
-- 提出: https://atcoder.jp/contests/arc127/submissions/57430799
+- 参考にした提出（他の人の AC）: https://atcoder.jp/contests/arc127/submissions/57430799
 
 ---
 
