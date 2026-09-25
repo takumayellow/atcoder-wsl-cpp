@@ -314,6 +314,10 @@ cd abc128/c
 
 実例: [`abc128/c/`](abc128/c/) / [`arc127/a/`](arc127/a/)（どちらも explanation.md + slides.pdf）
 
+紙に書いた考察メモは、撮影した原本（手書きの PDF も）を Box に置き、メモを手書き風に描き直した `thinking.tex` → `thinking.pdf` と、振り返りの文章 `thinking.md` をリポジトリに残す。
+置き場所・問題の特定方法・書き方: **[`docs/handwritten-memos.md`](docs/handwritten-memos.md)**（例: [`abc048/b/thinking.md`](abc048/b/thinking.md)・[`thinking.pdf`](abc048/b/thinking.pdf)）。
+Claude Code では `atcoder-handmemo` スキルで一通り進む。
+
 ---
 
 ## フォルダ構成

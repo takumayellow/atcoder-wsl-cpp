@@ -1,0 +1,60 @@
+% abc087 B - Coins の手書きメモの再現（振り返りの文章は thinking.md）
+% ビルド: tools/build_thinking.sh abc087/b --preview
+\documentclass[a4paper]{article}
+\usepackage[margin=1.2cm]{geometry}
+\usepackage{handmemo}
+\pagestyle{empty}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1 枚目（上下逆に撮影。180° 回して読む）
+\begin{memopage}{20260925\_174921.jpg}
+  \hw(1.4,2.5){ABC087B\ \ \ Coins}
+
+  \hw(1.3,4.2){500 : A\ \ \ 100 : B\ \ \ 50 : C}
+  \redpen(9.0,4.0){ここの A, B, C は「使う枚数」。\\入力の A, B, C（持っている枚数）と同じ名前}
+
+  \hw(1.05,5.7){X = 500A + 100B + 50C}
+
+  \hwm(1.3,7.8){\frac{X}{50} = y}
+  \redpen(5.2,7.8){50 で割って式を小さくするのはよい}
+
+  \hw(1.1,9.5){$y = 10A + 2B + C$\ \ なる (A, B, C) の個数}
+  \hw(1.05,10.4){\large count = 0}
+  \hw(0.6,11.4){for i\ \ $x \in [\,0, \floor{\frac{y}{10}}\,]$}
+  \hw(2.4,12.5){\large (a = i)}
+  \redpen(9.6,11.2){i ≦（500 円の持ち枚数）の上限が無い}
+  \redarrow(9.5,11.3)(8.3,11.5)
+
+  \hw(1.4,14.0){y − 10i = 2B + C}
+  \hw(2.55,15.4){for j $\in [\,0, \floor{\frac{y-10i}{2}}\,]$}
+  \redpen(11.6,15.2){j ≦（100 円の持ち枚数）\\も無い}
+  \redarrow(11.5,15.3)(10.9,15.5)
+
+  \hw(4.3,17.2){y − 10i − 2j = C}
+  \hw(6.15,18.5){\large count += 1}
+  \redpen(4.3,20.4){この C（使う枚数）が 50 円の持ち枚数以下か確かめずに数えている\\→ 入力例 2（5 1 0 150）で答え 0 のはずが 2 になる}
+  \redarrow(9.2,19.8)(8.4,18.9)
+\end{memopage}
+
+% ---------------------------------------------------------------- 図
+\clearpage
+\section*{図: 入力例 2 でメモのループが数える点}
+入力例 2（$A=5, B=1, C=0, X=150$、$y=3$）で $i=0$ に固定し、100 円の枚数 $j$ と 50 円の枚数 $k = y-2j$ を並べた。
+
+\begin{center}
+\begin{tikzpicture}[x=1.1cm,y=1.1cm]
+  % 入力例 2: A=5, B=1, C=0, X=150 (y=3)。i=0 に固定し、j と k=y-2j を並べる
+  \draw[-{Stealth}] (-0.3,0) -- (2.6,0) node[right] {\small $j$（100 円）};
+  \draw[-{Stealth}] (0,-0.3) -- (0,3.8) node[above] {\small $k = y - 2j$（50 円）};
+  \foreach \j in {0,1} {\draw (\j,0.08) -- (\j,-0.08) node[below] {\small $\j$};}
+  \foreach \k in {0,1,2,3} {\draw (0.08,\k) -- (-0.08,\k) node[left] {\small $\k$};}
+  \fill[redpen!12] (-0.25,-0.12) rectangle (1.25,0.12);
+  \node[redpen,below right] at (1.2,-0.3) {\small 手持ちで使える範囲（$j \leq B=1$, $k \leq C=0$）};
+  \fill (0,3) circle (2.6pt) node[right=3pt] {\small $j=0, k=3$};
+  \fill (1,1) circle (2.6pt) node[right=3pt] {\small $j=1, k=1$};
+  \node[align=left,right] at (2.9,2.1) {\small メモのループはこの 2 点を数える。\\\small どちらも $k > C = 0$ なので、答えは 0};
+\end{tikzpicture}
+\end{center}
+
+\end{document}

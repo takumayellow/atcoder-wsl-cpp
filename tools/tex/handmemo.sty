@@ -1,0 +1,94 @@
+% handmemo.sty — 手書きの考察メモを「手書き風」に描き直すための共通スタイル（lualatex 専用）
+%
+%   \usepackage{handmemo}            % thinking.tex から読む（TEXINPUTS は latexmkrc で通す）
+%
+%   \begin{memopage}{<原本のファイル名>}  % 方眼紙 1 枚 = 原本 1 枚。座標は cm、左上が (0,0)、下が +y
+%     \hw(2,1){B --- Between a and b ...}      % 手書き（黒）
+%     \hwm(2,3){\floor{\frac{b}{x}} - \floor{\frac{a}{x}}}   % 手書きの数式
+%     \hwstrike(9,6){$x \% m == 0$}            % 書いて消した
+%     \hwcircle(3,8)(2.2,0.8)                  % (中心)(横半径,縦半径) の丸囲み
+%     \hwunread(4,9){3 文字}                   % 読めない所（推測で埋めない）
+%     \redpen(12,5){ここが WA の原因}          % 後から見返して入れる赤ペン
+%     \redarrow(11.8,5)(8,4.2)                 % 赤ペンの矢印
+%   \end{memopage}
+%
+% 見た目の方針: 原本にあるもの = 黒インク、原本に無い後からの指摘 = 赤ペン、読めない所 = 灰色の枠。
+% 赤と黒を混ぜないことで「そのとき考えたこと」と「振り返り」が一目で分かれる。
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{handmemo}[2026/09/25 hand-drawn memo reproduction]
+
+\RequirePackage{luatexja-fontspec}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{tikz}
+\usetikzlibrary{decorations.pathmorphing,decorations.pathreplacing,arrows.meta,calc}
+\RequirePackage{xcolor}
+
+% --- フォント: Windows 標準のもので完結させる（追加インストール不要） ---
+% 日本語 = UD デジタル教科書体（ペン字に近い）、英数 = Ink Free（手書き）
+% 名前だと luaotfload の索引に載らないことがあるので、ファイルを直接指す
+\newjfontfamily\hwjfont{UDDigiKyokashoN-R.ttc}[Path=C:/Windows/Fonts/,FontIndex=0]
+\newfontfamily\hwlfont{Inkfree.ttf}[Path=C:/Windows/Fonts/,Scale=1.05]
+\newcommand{\hwfont}{\hwjfont\hwlfont}
+
+% 数式の英数字も手書きの書体にする。メモのページだけ \MTversion{hand}、それ以外は普段の数式
+\RequirePackage[italic,defaultmathsizes]{mathastext}
+\begingroup\hwlfont\xdef\hm@family{\f@family}\endgroup
+\let\hm@saved@rmdefault\rmdefault
+\renewcommand{\rmdefault}{\hm@family}
+\Mathastext[hand]
+\let\rmdefault\hm@saved@rmdefault
+\MTversion{normal}
+
+\definecolor{ink}{HTML}{22262E}
+\definecolor{redpen}{HTML}{D23A2F}
+\definecolor{gridline}{HTML}{C9DCEB}
+\definecolor{paper}{HTML}{FCFCF8}
+
+% 床関数・天井関数（メモによく出る）
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+
+% 線をわずかに揺らして手で引いた感じにする。seed を固定するのでビルドごとに形は変わらない
+\pgfmathsetseed{4625}
+\tikzset{
+  hand/.style={decorate,decoration={random steps,segment length=2.2pt,amplitude=0.35pt},
+               line cap=round,line join=round,rounded corners=0.6pt},
+  hwnode/.style={anchor=west,inner sep=1pt,text=ink,font=\hwfont\Large},
+}
+
+\newenvironment{memopage}[1]{%
+  \clearpage\thispagestyle{empty}\MTversion{hand}%
+  \noindent\begin{tikzpicture}[x=1cm,y=-1cm]
+    % 紙と方眼（5 mm）
+    \fill[paper] (0,0) rectangle (18,26);
+    \foreach \gx in {0.5,1,...,17.5} {\draw[gridline,line width=0.2pt] (\gx,0) -- (\gx,26);}
+    \foreach \gy in {0.5,1,...,25.5} {\draw[gridline,line width=0.2pt] (0,\gy) -- (18,\gy);}
+    \draw[gridline!60!black,line width=0.3pt] (0,0) rectangle (18,26);
+    \node[anchor=north east,font=\footnotesize\ttfamily,text=gray] at (17.9,0.1) {原本: #1};
+}{%
+  \end{tikzpicture}\clearpage\MTversion{normal}
+}
+
+% \hw(x,y){テキスト}: 左端を (x,y) に置く。数式は $...$ で混ぜてよい
+\def\hw(#1,#2)#3{\node[hwnode] at (#1,#2) {#3};}
+% \hwm(x,y){数式}: ディスプレイ数式として置く
+\def\hwm(#1,#2)#3{\node[hwnode] at (#1,#2) {$\displaystyle #3$};}
+% \hwstrike(x,y){テキスト}: 書いたあと横線で消したもの
+\def\hwstrike(#1,#2)#3{%
+  \node[hwnode] (hws) at (#1,#2) {#3};
+  \draw[ink,hand,line width=0.7pt] ($(hws.west)+(0.05,0.03)$) -- ($(hws.east)+(-0.05,-0.05)$);}
+% \hwcircle(cx,cy)(rx,ry): 丸で囲んだもの
+\def\hwcircle(#1,#2)(#3,#4){\draw[ink,hand,line width=0.7pt,rotate around={-4:(#1,#2)}] (#1,#2) ellipse ({#3} and {#4});}
+% \hwline(x1,y1)(x2,y2): 手で引いた線（下線・区切りなど）
+\def\hwline(#1,#2)(#3,#4){\draw[ink,hand,line width=0.7pt] (#1,#2) -- (#3,#4);}
+% \hwunread(x,y){補足}: 判読できない所。推測で埋めずに枠だけ置く
+\def\hwunread(#1,#2)#3{\node[anchor=west,draw=gray,dashed,rounded corners=2pt,text=gray,
+  font=\sffamily\footnotesize,inner sep=2pt] at (#1,#2) {判読不能: #3};}
+% \redpen(x,y){テキスト}: 振り返りの赤ペン（原本には無い）
+\def\redpen(#1,#2)#3{\node[anchor=west,text=redpen,font=\hwfont\normalsize,align=left,inner sep=1pt] at (#1,#2) {#3};}
+% \redarrow(x1,y1)(x2,y2): 赤ペンの矢印
+\def\redarrow(#1,#2)(#3,#4){\draw[redpen,hand,line width=0.8pt,-{Stealth[length=2.2mm]}] (#1,#2) to[bend left=12] (#3,#4);}
+% \redbox(x1,y1)(x2,y2): 赤ペンの囲み
+\def\redbox(#1,#2)(#3,#4){\draw[redpen,hand,line width=0.8pt] (#1,#2) rectangle (#3,#4);}
+
+\endinput
