@@ -37,3 +37,13 @@ obj/
 *.snm
 *.toc
 *.vrb
+
+# 原本（撮影画像・スキャン・図の書き出し・配布された問題 PDF）は Box に置き、リポジトリには入れない
+# 置き場所の対応は docs/handwritten-memos.md
+*.jpg
+*.jpeg
+*.png
+*.heic
+memo.pdf
+*_DESIGN_REF.pdf
+*-problemset.pdf
