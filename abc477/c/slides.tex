@@ -1,0 +1,342 @@
+% ABC477 C - Range Search Query
+% ビルド: ../../tools/build_slides.sh      （latexmk -pdfdvi → platex + dvipdfmx）
+% 図は TikZ で描く。書き方の指針は tools/slides_guide.md を参照。
+\documentclass[dvipdfmx,aspectratio=169]{beamer}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{pxjahyper}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,backgrounds,fit,decorations.pathreplacing}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+% 状態の色分け（正解/不正解・採用/棄却などに使い回す）
+\definecolor{ok}{RGB}{0,140,70}
+\definecolor{ng}{RGB}{200,30,30}
+\definecolor{onc}{RGB}{240,180,0}
+
+\title[ABC477 C]{AtCoder ABC477 -- C\\\small Range Search Query の解説（尺取り法）}
+\author[abc477]{}
+\institute{}
+\date[ABC477]{AtCoder Beginner Contest 477 / 300 点}
+
+% 文字列 abcdabc を 1 マス 0.8 で並べる。#1: y 座標
+\newcommand{\strrow}[1]{%
+  \foreach \c [count=\i from 0] in {a,b,c,d,a,b,c}{
+    \draw (\i*0.8,#1) rectangle ++(0.8,0.6);
+    \node[font=\ttfamily] at (\i*0.8+0.4,#1+0.3) {\c};
+  }}
+
+\begin{document}
+
+%====================================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%====================================================================
+\begin{frame}{問題の概要}
+  文字列 $S, T$ と $Q$ 個のクエリ $(L, R)$．
+  \textbf{$S$ の $L$ 文字目から $R$ 文字目の中に $T$ が連続して現れるか}を Yes / No で答える．
+
+  \vspace{0.6em}
+  \begin{center}
+    \begin{tikzpicture}
+      \fill[onc!35] (0.8,0) rectangle (4.8,0.6);
+      \strrow{0}
+      \foreach \i in {1,...,7}{ \node[font=\scriptsize,gray] at (\i*0.8-0.4,-0.25) {\i}; }
+      \draw[ok,line width=2pt] (0.8,0) rectangle (2.4,0.6);
+      \draw[decorate,decoration={brace,amplitude=5pt}] (0.8,0.75) -- (4.8,0.75)
+        node[midway,above=4pt,font=\small] {$(L,R)=(2,6)$ の範囲 \texttt{bcdab}};
+      \node[anchor=west,font=\small] at (6.2,0.3) {$T=$ \texttt{bc} を\textcolor{ok}{含む} $\Rightarrow$ Yes};
+    \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.3em}
+  サンプル 1: $S=$ \texttt{abcdabc}，$T=$ \texttt{bc}．
+  $(3,5)$ は \texttt{cda} なので No，$(3,7)$ は \texttt{cdabc} なので Yes．
+
+  \vspace{0.4em}
+  \begin{alertblock}{制約}
+    $|S| \le 4\times10^5$，\ \ $\mathbf{|T| \le 10}$，\ \ $Q \le 2\times10^5$．
+    入力は $Q$，$S$，$T$ の順（$Q$ が先頭）．
+  \end{alertblock}
+\end{frame}
+
+%====================================================================
+\begin{frame}{まず制約を読む}
+  \begin{itemize}
+    \item クエリごとに切り出して探す: $O(QN) = 2\times10^5 \times 4\times10^5 = 8\times10^{10}$
+      \ \textcolor{ng}{\textbf{間に合わない}}
+    \item 全区間の答えを表にする: $N^2 = 1.6\times10^{11}$ マス
+      \ \textcolor{ng}{\textbf{確保できない}}
+  \end{itemize}
+
+  \vspace{0.6em}
+  \begin{block}{欲しいもの}
+    前計算で \textbf{$O(N)$ 程度の大きさ}の配列を作り，
+    各クエリに \textbf{$O(1)$} で答えたい．
+  \end{block}
+
+  \vspace{0.6em}
+  $\Rightarrow$ 2 次元の「区間 $\to$ Yes/No」表を \textbf{1 次元に畳める性質}を探す．
+\end{frame}
+
+%====================================================================
+\begin{frame}{核心 -- 区間を広げても「含む」は崩れない}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=0.5]
+        % f = [3,3,7,7,7,7,8]（1-indexed の右端）
+        \foreach \l/\f in {0/3,1/3,2/7,3/7,4/7,5/7,6/8}{
+          \foreach \r in {1,...,7}{
+            \pgfmathtruncatemacro{\valid}{\r > \l ? 1 : 0}
+            \pgfmathtruncatemacro{\yes}{\r >= \f ? 1 : 0}
+            \ifnum\valid=1
+              \ifnum\yes=1
+                \fill[ok!70] (\r-1,-\l) rectangle ++(1,-1);
+              \else
+                \fill[ng!20] (\r-1,-\l) rectangle ++(1,-1);
+              \fi
+            \else
+              \fill[gray!15] (\r-1,-\l) rectangle ++(1,-1);
+            \fi
+            \draw[gray!60] (\r-1,-\l) rectangle ++(1,-1);
+          }
+          \pgfmathtruncatemacro{\LL}{\l+1}
+          \node[font=\scriptsize] at (-0.6,-\l-0.5) {\LL};
+        }
+        \foreach \r in {1,...,7}{ \node[font=\scriptsize] at (\r-0.5,0.5) {\r}; }
+        \node[font=\scriptsize] at (3.5,1.3) {右端 $R$};
+        \node[font=\scriptsize,rotate=90] at (-1.5,-3.5) {左端 $L$};
+        % 境目の階段
+        \draw[ok!40!black,line width=1.6pt]
+          (2,0) -- (2,-2) -- (6,-2) -- (6,-6) -- (7,-6);
+      \end{tikzpicture}
+
+      {\scriptsize サンプル 1．\textcolor{ok}{緑} = 含む，\textcolor{ng}{赤} = 含まない}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      $[l, r]$ が $T$ を含むなら，広げた $[l, r+1]$ も含む．
+
+      \vspace{0.3em}
+      $\Rightarrow$ 各行は \textcolor{ng}{No}$\cdots$\textcolor{ng}{No}\,\textcolor{ok}{Yes}$\cdots$\textcolor{ok}{Yes}．境目を
+      \[
+        f(l) = \text{$T$ を含む最小の右端}
+      \]
+      と置けば，\textbf{答えは $R \ge f(L)$ かどうか}．
+
+      \vspace{0.5em}
+      さらに $l$ を右へずらすと区間は縮むので
+      \begin{block}{}
+        \centering
+        \textbf{$f(l)$ は $l$ について単調非減少}
+      \end{block}
+      図の境目が\textbf{右下へ進む階段}になっている．
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%====================================================================
+\begin{frame}{尺取り法 -- 右端 $r$ を戻さずに $f(l)$ を全部求める}
+  窓 $s[l:r]$（半開区間）を持ち，\textbf{含まない間は $r$ を進める $\to$ 含んだら記録 $\to$ $l$ を進める}．
+
+  \vspace{0.5em}
+  \begin{center}
+    \begin{tikzpicture}
+      \strrow{0}
+      \foreach \i in {0,...,7}{ \node[font=\scriptsize,gray] at (\i*0.8,-0.25) {\i}; }
+      \node[font=\scriptsize,gray,anchor=east] at (-0.1,-0.25) {位置};
+      % 窓（l, r, ラベル, y）
+      \foreach \l/\r/\lab/\y in {0/3/{$l{=}0$: $r$ を 3 まで進める $\to f=3$}/-0.9,
+                                  1/3/{$l{=}1$: 含んだまま $\to f=3$}/-1.5,
+                                  2/7/{$l{=}2$: $r$ を 7 まで進める $\to f=7$}/-2.1,
+                                  6/7/{$l{=}6$: $r=N$ で伸ばせない $\to$ 番兵}/-2.7}{
+        \draw[ok,line width=4pt] (\l*0.8+0.05,\y) -- (\r*0.8-0.05,\y);
+        \node[anchor=west,font=\small] at (6.0,\y) {\lab};
+      }
+    \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.3em}
+  \begin{block}{なぜ $r$ を戻さなくてよいか}
+    $f$ は単調非減少なので，次の $l$ の境目は\textbf{今の $r$ 以上}にある．
+    よって $r$ は全体を通して $0 \to N$ へ\textbf{一方向に $N$ 回}しか進まない．
+  \end{block}
+\end{frame}
+
+%====================================================================
+\begin{frame}{\texttt{main.py} との違い -- $r$ をリセットすると二重ループ}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=0.42]
+        % 左: リセット版（各行で r が l の近くから右端まで）
+        \node[font=\scriptsize] at (3.5,1.0) {リセット版};
+        \foreach \l in {0,...,6}{
+          \draw[ng,line width=2pt,-{Latex[length=2mm]}] (\l,-\l-0.5) -- (7,-\l-0.5);
+        }
+        \draw[gray] (0,0) rectangle (7,-7);
+        \node[font=\scriptsize] at (3.5,-7.8) {合計 $\approx N^2/2$ 歩};
+        % 右: 尺取り（r は一方向）
+        \begin{scope}[xshift=9cm]
+          \node[font=\scriptsize] at (3.5,1.0) {尺取り};
+          \draw[ok,line width=2pt,-{Latex[length=2mm]}]
+            (0,-0.5) -- (3,-0.5) -- (3,-2.5) -- (7,-2.5) -- (7,-6.5);
+          \draw[gray] (0,0) rectangle (7,-7);
+          \node[font=\scriptsize] at (3.5,-7.8) {合計 $N$ 歩};
+        \end{scope}
+      \end{tikzpicture}
+
+      {\scriptsize 横 = $r$，縦 = $l$．矢印が $r$ の移動}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      {\small
+      \begin{tabular}{rrr}
+        \toprule
+        $N$ & リセット版 & 尺取り\\
+        \midrule
+        1000 & 500500 & 1000\\
+        2000 & 2001000 & 2000\\
+        4000 & 8002000 & 4000\\
+        \bottomrule
+      \end{tabular}}
+
+      {\scriptsize $r$ の移動回数の実測（$S=$ \texttt{a}$\times N$，$T=$ \texttt{a}）}
+
+      \vspace{0.5em}
+      \texttt{main.py} は $l$ ごとに \texttt{r = l+len(t)-1} と\textbf{戻している}．
+      さらに判定が \texttt{t in s[l:r+1]} で毎回 $O(N)$．
+
+      \vspace{0.3em}
+      {\small 実行時間（出力除去版）: $N=2000$ で 0.43 秒，$4000$ で 1.72 秒
+      $\Rightarrow$ 2 倍で約 4 倍の $O(N^2)$}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%====================================================================
+\begin{frame}{窓が $T$ を含むかは差分で更新する}
+  窓が動くたびに \texttt{t in 窓} で調べると 1 回 $O(N)$ で台無し．
+  代わりに\textbf{窓に完全に収まる $T$ の出現数 \texttt{cnt}} を持つ．
+
+  \vspace{0.6em}
+  \begin{center}
+    \begin{tikzpicture}
+      \strrow{0}
+      \draw[onc,line width=3pt] (1.6,-0.1) rectangle (5.6,0.7);
+      \node[font=\scriptsize,onc!70!black] at (3.6,0.95) {窓 $s[2:7]$};
+      % 右端で終わる出現
+      \draw[ok,line width=2pt] (4.0,-0.35) -- (5.6,-0.35);
+      \node[anchor=north,font=\scriptsize,ok] at (4.8,-0.45) {$r$ を進めて右端で終わる \texttt{bc} $\Rightarrow$ \texttt{cnt += 1}};
+      % 左端から始まる出現（l=1 のとき）
+      \draw[ng,line width=2pt] (0.8,1.25) -- (2.4,1.25);
+      \node[anchor=south,font=\scriptsize,ng] at (1.6,1.5) {その前，$l$ を $1\to2$ に進めたとき: $l{=}1$ から始まる \texttt{bc} を外す $\Rightarrow$ \texttt{cnt -= 1}};
+    \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.2em}
+  \begin{itemize}
+    \item $r$ を 1 進める: $s[r-|T|:r] = T$ なら \texttt{cnt += 1}
+    \item $l$ を 1 進める: $s[l:l+|T|] = T$ かつ窓に入っていれば \texttt{cnt -= 1}
+  \end{itemize}
+  比較は長さ $|T| \le 10$ なので\textbf{定数時間}．前計算は全体で $O(N|T|)$．
+\end{frame}
+
+%====================================================================
+\begin{frame}[fragile]{擬似コードと実装の要点}
+\begin{verbatim}
+f = [N+1] * N ; cnt = 0 ; r = 0          # 窓は s[l:r]
+for l in 0..N-1:
+    while r < N and cnt == 0:            # 含むまで右端を伸ばす
+        r += 1
+        if r-M >= l and s[r-M:r] == T: cnt += 1
+    if cnt > 0: f[l] = r                 # r はそのまま 1-indexed の右端
+    if l+M <= r and s[l:l+M] == T: cnt -= 1   # 左端の出現を外す
+query (L, R):  Yes if f[L-1] <= R
+\end{verbatim}
+
+  \vspace{0.2em}
+  \begin{itemize}
+    \item \textbf{$r$ の初期化が $l$ のループの外}にあることが尺取り法の本体．
+    \item 半開区間 $s[l:r]$ で持つと $r$ がそのまま 1-indexed の右端 $\Rightarrow$ \verb|f[L-1] <= R| で比べられる．
+    \item \verb|N+1| は「どの $R \le N$ でも足りない」番兵．
+    \item 出力は最大 $2\times10^5$ 行．\verb|sys.stdin.readline| と \verb|"\n".join| でまとめて出す．
+  \end{itemize}
+\end{frame}
+
+%====================================================================
+\begin{frame}{サンプル 1 を手で追う（$S=$ \texttt{abcdabc}，$T=$ \texttt{bc}）}
+  \centering
+  {\small
+  \begin{tabular}{clccl}
+    \toprule
+    $l$ & $r$ の動き & 窓 $s[l:r]$ & $f[l]$ & $l$ を外すとき\\
+    \midrule
+    0 & $0\to1\to2\to3$ & \texttt{abc} & 3 & \texttt{ab}: 外さない\\
+    1 & 動かない & \texttt{bc} & 3 & \texttt{bc}: \textcolor{ng}{外す $\to$ cnt 0}\\
+    2 & $3\to4\to5\to6\to7$ & \texttt{cdabc} & 7 & \texttt{cd}: 外さない\\
+    3, 4 & 動かない & \texttt{dabc}, \texttt{abc} & 7 & 外さない\\
+    5 & 動かない & \texttt{bc} & 7 & \texttt{bc}: \textcolor{ng}{外す $\to$ cnt 0}\\
+    6 & $r=N$ で伸ばせない & \texttt{c} & 8（番兵） & ---\\
+    \bottomrule
+  \end{tabular}}
+
+  \vspace{0.5em}
+  \raggedright
+  $r$ は $0 \to 7$ の\textbf{合計 7 回}しか進んでいない．$f = [3,3,7,7,7,7,8]$．
+
+  \vspace{0.3em}
+  \centering
+  {\small
+  \begin{tabular}{cccc}
+    \toprule
+    $(L,R)$ & $f[L-1]$ & 判定 & 答え\\
+    \midrule
+    $(2,6)$ & 3 & $6 \ge 3$ & \textcolor{ok}{Yes}\\
+    $(3,5)$ & 7 & $5 < 7$ & \textcolor{ng}{No}\\
+    $(3,7)$ & 7 & $7 \ge 7$ & \textcolor{ok}{Yes}\\
+    \bottomrule
+  \end{tabular}}
+\end{frame}
+
+%====================================================================
+\begin{frame}{一段深い見方}
+  \begin{itemize}
+    \item \textbf{\texttt{cnt} は 0 か 1 にしかならない．}
+      $r$ を伸ばすのは \texttt{cnt} $=0$ の間だけで，1 になった瞬間に止まる．
+      個数で持っておくと「$k$ 個以上含む」にそのまま拡張できる．
+    \item \textbf{$f(l)$ は「$l$ 以降で最初に $T$ が始まる位置 $+|T|$」と同じ．}
+      \texttt{ac.py} はこれを後ろから 1 回の走査で直接求めている（計算量は同じ）．
+    \item \textbf{公式解説は累積和．}
+      各位置で $T$ が始まるかの 0/1 配列の累積和で，
+      始点が $[L,\ R-|T|+1]$ にある出現が 1 つ以上あるかを $O(1)$ で判定する．
+  \end{itemize}
+
+  \vspace{0.4em}
+  \begin{block}{尺取り法が使える条件}
+    「区間が条件を満たすなら，それを広げた区間も満たす」という\textbf{単調性}．
+    これがあると境目 $f(l)$ が単調に動き，右端を戻さずに済む．
+  \end{block}
+\end{frame}
+
+%====================================================================
+\begin{frame}{まとめ}
+  \begin{enumerate}
+    \item \textbf{「広げても条件を満たし続ける」なら，左端ごとの境目 $f(l)$ は単調．}
+      2 次元の「区間 $\to$ 答え」表は 1 次元の $f$ に畳める．
+    \item \textbf{尺取り法が $O(N)$ なのは右端を戻さないから．}
+      $l$ のループの中で $r$ を初期化したら，それは尺取りではなく二重ループ．
+    \item \textbf{窓の状態は差分で更新する．}
+      窓が動くたびに \texttt{in} や \texttt{sum} で全体を見直すと $O(N)$ が掛かる．
+  \end{enumerate}
+
+  \vspace{0.6em}
+  \textbf{同系統の問題}: ABC032 C -- 列の積，ABC130 D -- Enough Array，
+  ABC098 D -- Xor Sum 2
+\end{frame}
+
+\end{document}
