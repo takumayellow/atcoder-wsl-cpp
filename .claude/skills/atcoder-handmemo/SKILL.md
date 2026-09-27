@@ -11,7 +11,7 @@ PDF は「メモの再現（原本 1 枚 = 1 ページ）」と「振り返り�
 置き場所・色の決まり・問題の特定方法の正本は [`docs/handwritten-memos.md`](../../../docs/handwritten-memos.md)。**最初にそれを読む。**
 完成形の例は `abc048/b/thinking.tex`。迷ったらこれを写して直す。
 
-写真をスマホから Box へ取り込む所までは、このスキルの範囲外（dotfiles の `photo-intake` スキル）。
+写真をスマホから Box へ取り込む所までは、このスキルの範囲外（takumayellow/phone-intake の `photo-intake` スキル）。
 ここは Box の `Photo Backup/手書き/atcoder/<contest>/<問題>/` に原本がある状態から始める。
 
 ## 描き直しに使う道具（`tools/tex/handmemo.sty`）
