@@ -1,6 +1,6 @@
 ---
 name: solve-retro
-description: 問題を解いた過程を、録画の独り言・保存ごとのソースの控え（.snap/）・Claude との会話から再構成し、軌跡（trajectory.md）・発言録（minutes.md）・振り返りページ（retrospective.html）にまとめる。「解いた過程を振り返りたい」「録画から振り返り作って」「どこで詰まったかまとめて」「議事録から流れを整理して」等で使う。解く前に「録画して解く」準備を聞かれたときもこれ
+description: 問題を解いた過程を、録画の独り言・tmux ペインに残った実行の記録・Claude との会話から再構成し、軌跡（trajectory.md）・発言録（minutes.md）・振り返りページ（retrospective.html）にまとめる。「解いた過程を振り返りたい」「録画から振り返り作って」「どこで詰まったかまとめて」「議事録から流れを整理して」等で使う。解く前に「録画して解く」準備を聞かれたときもこれ
 ---
 
 # solve-retro
@@ -18,13 +18,14 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
 | 材料 | 取れるもの | 道具 |
 |------|-----------|------|
 | 録画の音声（独り言） | 考えていたこと・迷い・気づいた瞬間 | `tools/retro/transcribe_rec.py` |
-| `.snap/`（保存のたびに残るソース） | 何時何分にどのコードだったか | `tools/retro/watch_src.py`（解いている間だけ起動） |
-| `.snap/`（actest を使ったとき） | 上に加えて ok / ng / ce | `tools/test_code.sh`（自動） |
+| 解いた tmux ペインのスクロールバック | 打ったコマンドと出力（デバッグ表示・サンプルの結果）が順番どおり全部 | `tmux capture-pane`（手順 1） |
+| 録画の画面 | 見ていたもの（問題文・解説・図）と、その時点のコード | `tools/retro/frames.py` |
 | Claude Code の会話ログ | 何を聞き、何と答えられたか | `tools/retro/claude_log.py` |
-| 録画の画面 | 見ていたもの（問題文・解説・図・ブラウザ） | `tools/retro/frames.py` |
+| `.snap/`（あれば） | 保存ごと・テストごとのソース | `actest`（自動）/ `tools/retro/watch_src.py`（任意） |
 | 途中の版 × 愚直解 | 各版が何件落ちるか、最初の反例 | `tools/retro/verify_versions.py` |
 
-コードの版は画面から読み起こさない。`.snap/` が正本（前回は 5783 コマから読み起こして手間も誤りも多かった）。
+スクロールバックには時刻が無く、vim の中のコードも残らない（全画面のアプリは履歴に入らない）。
+**順番と出力はスクロールバック、時刻とコードは録画の画面**、と分けて取り、出力の一致で 2 つを対応づける。
 
 ## 解く前（ユーザーに勧めること）
 
@@ -35,15 +36,12 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
    - するとトラック 2（`--track 1`）がマイクだけになり、声の分離（`--separate`）が要らなくなる
    - マイクの入力が小さいと拾い漏れる。フィルタの「ゲイン」で +10 dB ほど上げる
 3. 録画のファイル名は OBS の既定（`2026-09-30 19-21-27.mp4`）のままにする。開始時刻をここから読む。
-4. **録画を始めるときに、ソースの見張りを起動する。** 解くフォルダ（コンテストのフォルダごとでよい）を渡す。
-   保存のたびに `.snap/<日時>_save-<ファイル名>` が残る（中身が同じなら残らない。続けて保存しているあいだは 2 秒待ってから写す）。
-   エディタや実行のしかたに依らない。tmux なら裏のウィンドウで動かしておけば邪魔にならない:
+4. **解いた tmux ペインは、振り返りが済むまで閉じない。** スクロールバックはペインを閉じると消える
+   （`clear` では消えない。保持は `history-limit 100000` 行）。ほかの準備は要らない。
 
-   ```bash
-   tmux new-window -d -n snap "python3 /mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp/tools/retro/watch_src.py '$PWD'"
-   ```
-
-   解き終わったら `tmux kill-window -t snap`。`actest` でテストした回は、それとは別に `.snap/<日時>_<ok|ng|ce>.<拡張子>` も残る。
+保存ごとの版まで確実に残したい回だけ、裏のウィンドウで `watch_src.py` を動かしてもよい（`.snap/<日時>_save-<名前>` が残る）:
+`tmux new-window -d -n snap "python3 /mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp/tools/retro/watch_src.py '$PWD'"`、
+終わったら `tmux kill-window -t snap`。
 
 ## 解いた後の手順
 
@@ -52,9 +50,22 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
 ### 1. 材料を集める
 
 - 録画: `ls -t ~/Videos/*.mp4`。解いた時間帯のものを特定し、`ffprobe` で長さとトラック数を見る。
-- 控え: `ls <問題フォルダ>/.snap/`。保存の時刻（actest を使った回は ok / ng / ce も）の並びが、そのまま試行の年表になる。
-  いつ実行して何が出たかは控えに残らないので、画面（手順 3）と独り言で補う。
-  `.snap/` が無い回（見張りを起動し忘れた）は、画面から版を読み起こすしかない。手間が大きいので、そのときは区間を絞る。
+- 解いたペイン: 今いる場所か、スクロールバックに問題フォルダが出てくるペインを探して、丸ごと scratchpad に書き出す。
+  Git Bash の `tmux` は `wsl.exe tmux` で、`-F '#{pane_id}'` のような書式だけの引数は壊れるので、`id=` を前に付けて剥がす:
+
+  ```bash
+  DIR=contest/2026/JAG/c        # 問題フォルダのパスの一部
+  for p in $(tmux list-panes -a -F 'id=#{pane_id}' | sed 's/^id=//'); do
+    n=$(tmux capture-pane -p -J -S - -t "$p" | grep -c "$DIR")
+    [ "$n" -gt 0 ] && echo "$p $n"
+  done                                                   # ヒット数の多いペインが本命
+  tmux capture-pane -p -J -S - -t <ペイン> > <scratchpad>/retro/pane.txt
+  ```
+
+  `<プロンプト>$ python3 main.py < input.txt` の行で区切ると、試行ごとの出力の列になる。
+  デバッグ表示（`l=-1,r=0のときcountの値は0` など）は、そのとき何を疑っていたかの証拠になる。
+- `.snap/` があれば `ls <問題フォルダ>/.snap/`。保存の時刻の並びがそのまま版の年表になる。
+  無ければ版は画面から読む（手順 3）。全部は読まず、スクロールバックで出力が変わった所の前後に絞る。
 - Claude との会話:
 
   ```bash
@@ -86,13 +97,14 @@ py -3.13 tools/retro/frames.py "<録画>.mp4" --out <scratchpad>/retro --from 23
 
 ### 4. 年表を作る
 
-3 つの時刻はどれも日本時間にそろっている（録画名・`.snap` の名前・`claude_log.py` の出力）。
-発言・スナップショット・会話を 1 本の時刻順に並べ、**考えが切り替わった所**で段階に区切る
+時刻はどれも日本時間にそろっている（録画名・`.snap` の名前・`claude_log.py` の出力）。
+スクロールバックの各実行には、録画の画面で同じ出力が映ったコマの時刻を当てる。
+発言・実行・版・会話を 1 本の時刻順に並べ、**考えが切り替わった所**で段階に区切る
 （方針を決めた／サンプルが通った／ランダム比較で崩れた／書き直した／解説を読んだ、など）。
 
 ### 5. 途中の版を検証する
 
-意味のある版（各段階の最後・バグを入れた版・直した版）を `.snap/` から選び、
+意味のある版（各段階の最後・バグを入れた版・直した版）を `.snap/` から選び（無ければ画面から書き起こし）、
 `<問題フォルダ>/history/NN_<何をした版か>.<拡張子>` に写す（`.snap/` はコミットしないので、残す版はここに入れる）。
 
 愚直解と入力の生成を `gen.py`（scratchpad）に書き、全版をまとめて突き合わせる:
@@ -140,7 +152,7 @@ Artifact として公開し（アイコンは `timeline`）、URL を `trajector
 
 ### 8. 確かめてからコミットする
 
-- ページと md に書いた数字（不一致件数・反例・時刻）が、手順 5 の出力と `.snap` / TSV に一致するか見直す。
+- ページと md に書いた数字（不一致件数・反例・時刻）が、手順 5 の出力・スクロールバック・`.snap`・TSV に一致するか見直す。
   事実と合わない記述は残さない（`report-review.md` の考え方。必要なら `report-reviewer` を回す）。
 - コミットするのは `trajectory.md` `minutes.md` `retrospective.html` `history/`。
   **録画・音声・TSV・コマ画像・`.snap/` は入れない。**
@@ -148,7 +160,7 @@ Artifact として公開し（アイコンは `timeline`）、URL を `trajector
 
 ## 道具の置き場所
 
-- `tools/retro/`: 上の道具と共通部品 `rectime.py`。`watch_src.py` は WSL の `python3`（標準ライブラリだけ）で動かす。
+- `tools/retro/`: 上の道具と共通部品 `rectime.py`。任意の `watch_src.py` は WSL の `python3`（標準ライブラリだけ）で動かす。
   ほかは Windows の `py -3.13` で動かす（faster-whisper・openai・python-dotenv・soundfile・Pillow が入っている）。
   `verify_versions.py` は WSL の `python3` でも動く。
 - 声の分離: `~/dev/voice-lab/.venv/Scripts/audio-separator.exe`（モデル `UVR-MDX-NET-Voc_FT`）。
