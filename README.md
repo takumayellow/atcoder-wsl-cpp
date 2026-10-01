@@ -226,6 +226,8 @@ actest
 **動作:**
 - C++: `g++ -std=c++17 -Wall -I <ac-library> main.cpp` でコンパイル後、`oj t` でテスト
 - Python: `oj t -c "python3 main.py"` でテスト
+- 実行のたびにソースを `.snap/<日時>_<ok|ng|ce>.<拡張子>` に控える（前回と同じ内容なら控えない。`ACTEST_SNAPSHOT=0` で止まる）。
+  解いた過程を後から振り返るための記録で、`.claude/skills/solve-retro` が使う。コミットはしない
 
 **online-judge-tools (oj) の挙動:**
 - `oj t` はカレントディレクトリ配下の `test/` にあるサンプルケースを実行します
@@ -339,6 +341,11 @@ atcoder-wsl-cpp/
 │   ├── new_slides.sh          # 解説スライド slides.tex + latexmkrc の雛形生成
 │   ├── build_slides.sh        # スライドのビルド (+ --preview で全ページ PNG 化)
 │   ├── slides_guide.md        # 解説スライド (Beamer) の作り方
+│   ├── retro/                 # 解いた過程の振り返り（solve-retro スキル）
+│   │   ├── transcribe_rec.py  #   録画の独り言を時刻つきで文字起こし (Groq Whisper)
+│   │   ├── frames.py          #   録画のコマを時刻ラベルつきの一覧画像に
+│   │   ├── claude_log.py      #   Claude Code との会話を時間帯で抜き出す
+│   │   └── verify_versions.py #   途中の版を愚直解と突き合わせる
 │   └── templates/
 │       ├── explanation.md      # 解説資料テンプレート
 │       ├── slides.tex          # 解説スライドテンプレート (TikZ 込み)

@@ -20,6 +20,9 @@ session.json
 *.o
 main
 
+# actest が実行のたびに残すソースの控え（振り返り用。手元にだけ置く）
+.snap/
+
 # tools/build_slides.sh --preview が吐くページ画像（目視確認用。毎回作り直す）
 .slides_preview/
 
