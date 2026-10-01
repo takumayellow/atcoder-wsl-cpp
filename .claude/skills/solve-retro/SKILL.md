@@ -1,6 +1,6 @@
 ---
 name: solve-retro
-description: 問題を解いた過程を、録画の独り言・actest のスナップショット・Claude との会話から再構成し、軌跡（trajectory.md）・発言録（minutes.md）・振り返りページ（retrospective.html）にまとめる。「解いた過程を振り返りたい」「録画から振り返り作って」「どこで詰まったかまとめて」「議事録から流れを整理して」等で使う。解く前に「録画して解く」準備を聞かれたときもこれ
+description: 問題を解いた過程を、録画の独り言・保存ごとのソースの控え（.snap/）・Claude との会話から再構成し、軌跡（trajectory.md）・発言録（minutes.md）・振り返りページ（retrospective.html）にまとめる。「解いた過程を振り返りたい」「録画から振り返り作って」「どこで詰まったかまとめて」「議事録から流れを整理して」等で使う。解く前に「録画して解く」準備を聞かれたときもこれ
 ---
 
 # solve-retro
@@ -18,7 +18,8 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
 | 材料 | 取れるもの | 道具 |
 |------|-----------|------|
 | 録画の音声（独り言） | 考えていたこと・迷い・気づいた瞬間 | `tools/retro/transcribe_rec.py` |
-| `.snap/`（actest が実行ごとに残すソース） | 何時何分にどのコードで ok / ng / ce だったか | `tools/test_code.sh`（自動） |
+| `.snap/`（保存のたびに残るソース） | 何時何分にどのコードだったか | `tools/retro/watch_src.py`（解いている間だけ起動） |
+| `.snap/`（actest を使ったとき） | 上に加えて ok / ng / ce | `tools/test_code.sh`（自動） |
 | Claude Code の会話ログ | 何を聞き、何と答えられたか | `tools/retro/claude_log.py` |
 | 録画の画面 | 見ていたもの（問題文・解説・図・ブラウザ） | `tools/retro/frames.py` |
 | 途中の版 × 愚直解 | 各版が何件落ちるか、最初の反例 | `tools/retro/verify_versions.py` |
@@ -34,7 +35,15 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
    - するとトラック 2（`--track 1`）がマイクだけになり、声の分離（`--separate`）が要らなくなる
    - マイクの入力が小さいと拾い漏れる。フィルタの「ゲイン」で +10 dB ほど上げる
 3. 録画のファイル名は OBS の既定（`2026-09-30 19-21-27.mp4`）のままにする。開始時刻をここから読む。
-4. テストは `actest` で回す。実行のたびに `.snap/<日時>_<ok|ng|ce>.<拡張子>` が残る（同じ内容なら残らない。`ACTEST_SNAPSHOT=0` で止まる）。
+4. **録画を始めるときに、ソースの見張りを起動する。** 解くフォルダ（コンテストのフォルダごとでよい）を渡す。
+   保存のたびに `.snap/<日時>_save-<ファイル名>` が残る（中身が同じなら残らない。続けて保存しているあいだは 2 秒待ってから写す）。
+   エディタや実行のしかたに依らない。tmux なら裏のウィンドウで動かしておけば邪魔にならない:
+
+   ```bash
+   tmux new-window -d -n snap "python3 /mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp/tools/retro/watch_src.py '$PWD'"
+   ```
+
+   解き終わったら `tmux kill-window -t snap`。`actest` でテストした回は、それとは別に `.snap/<日時>_<ok|ng|ce>.<拡張子>` も残る。
 
 ## 解いた後の手順
 
@@ -43,7 +52,9 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
 ### 1. 材料を集める
 
 - 録画: `ls -t ~/Videos/*.mp4`。解いた時間帯のものを特定し、`ffprobe` で長さとトラック数を見る。
-- スナップショット: `ls <問題フォルダ>/.snap/`。時刻と ok / ng / ce の並びが、そのまま試行の年表になる。
+- 控え: `ls <問題フォルダ>/.snap/`。保存の時刻（actest を使った回は ok / ng / ce も）の並びが、そのまま試行の年表になる。
+  いつ実行して何が出たかは控えに残らないので、画面（手順 3）と独り言で補う。
+  `.snap/` が無い回（見張りを起動し忘れた）は、画面から版を読み起こすしかない。手間が大きいので、そのときは区間を絞る。
 - Claude との会話:
 
   ```bash
@@ -137,8 +148,8 @@ Artifact として公開し（アイコンは `timeline`）、URL を `trajector
 
 ## 道具の置き場所
 
-- `tools/retro/`: 上の 4 本と共通部品 `rectime.py`。Windows の `py -3.13` で動かす
-  （faster-whisper・openai・python-dotenv・soundfile・Pillow が入っている）。
+- `tools/retro/`: 上の道具と共通部品 `rectime.py`。`watch_src.py` は WSL の `python3`（標準ライブラリだけ）で動かす。
+  ほかは Windows の `py -3.13` で動かす（faster-whisper・openai・python-dotenv・soundfile・Pillow が入っている）。
   `verify_versions.py` は WSL の `python3` でも動く。
 - 声の分離: `~/dev/voice-lab/.venv/Scripts/audio-separator.exe`（モデル `UVR-MDX-NET-Voc_FT`）。
   場所が変わったら `RETRO_SEPARATOR` / `RETRO_SEPARATOR_MODELS` で指定する。
