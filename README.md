@@ -342,6 +342,7 @@ atcoder-wsl-cpp/
 │   ├── build_slides.sh        # スライドのビルド (+ --preview で全ページ PNG 化)
 │   ├── slides_guide.md        # 解説スライド (Beamer) の作り方
 │   ├── retro/                 # 解いた過程の振り返り（solve-retro スキル）
+│   │   ├── undo_versions.py   #   vim の undo の履歴から、変更ごとの版を時刻つきで取り出す
 │   │   ├── watch_src.py       #   （任意）解いている間、保存のたびにソースを .snap/ へ控える
 │   │   ├── transcribe_rec.py  #   録画の独り言を時刻つきで文字起こし (Groq Whisper)
 │   │   ├── frames.py          #   録画のコマを時刻ラベルつきの一覧画像に

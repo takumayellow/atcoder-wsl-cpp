@@ -1,6 +1,6 @@
 ---
 name: solve-retro
-description: 問題を解いた過程を、録画の独り言・tmux ペインに残った実行の記録・Claude との会話から再構成し、軌跡（trajectory.md）・発言録（minutes.md）・振り返りページ（retrospective.html）にまとめる。「解いた過程を振り返りたい」「録画から振り返り作って」「どこで詰まったかまとめて」「議事録から流れを整理して」等で使う。解く前に「録画して解く」準備を聞かれたときもこれ
+description: 問題を解いた過程を、録画の独り言・vim の undo の履歴（変更ごとのコードと時刻）・tmux ペインに残った実行の記録・Claude との会話から再構成し、軌跡（trajectory.md）・発言録（minutes.md）・振り返りページ（retrospective.html）にまとめる。「解いた過程を振り返りたい」「録画から振り返り作って」「どこで詰まったかまとめて」「議事録から流れを整理して」等で使う。解く前に「録画して解く」準備を聞かれたときもこれ
 ---
 
 # solve-retro
@@ -18,14 +18,17 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
 | 材料 | 取れるもの | 道具 |
 |------|-----------|------|
 | 録画の音声（独り言） | 考えていたこと・迷い・気づいた瞬間 | `tools/retro/transcribe_rec.py` |
+| vim の undo の履歴 | 変更ごと（1 回の入力・1 つのコマンドごと）のコードと秒単位の時刻。保存しなかった途中の変更も入る | `tools/retro/undo_versions.py` |
 | 解いた tmux ペインのスクロールバック | 打ったコマンドと出力（デバッグ表示・サンプルの結果）が順番どおり全部 | `tmux capture-pane`（手順 1） |
-| 録画の画面 | 見ていたもの（問題文・解説・図）と、その時点のコード | `tools/retro/frames.py` |
+| 録画の画面 | 見ていたもの（問題文・解説・図） | `tools/retro/frames.py` |
 | Claude Code の会話ログ | 何を聞き、何と答えられたか | `tools/retro/claude_log.py` |
 | `.snap/`（あれば） | 保存ごと・テストごとのソース | `actest`（自動）/ `tools/retro/watch_src.py`（任意） |
 | 途中の版 × 愚直解 | 各版が何件落ちるか、最初の反例 | `tools/retro/verify_versions.py` |
 
-スクロールバックには時刻が無く、vim の中のコードも残らない（全画面のアプリは履歴に入らない）。
-**順番と出力はスクロールバック、時刻とコードは録画の画面**、と分けて取り、出力の一致で 2 つを対応づける。
+**コードと時刻は undo の履歴、考えは独り言、実行の結果はスクロールバック**から取る。
+undo の履歴と独り言はどちらも時刻つきなので、時刻で並べるだけで「この 1 行を書き換えたとき何を言っていたか」が対応する。
+スクロールバックには時刻が無いので、実行の直前の保存（`changes.txt` の「保存N」）と出力の内容で位置を合わせる。
+コードを録画の画面から読み起こすのは、undo の履歴が無いときだけにする（手間も誤りも多い）。
 
 ## 解く前（ユーザーに勧めること）
 
@@ -37,7 +40,10 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
    - マイクの入力が小さいと拾い漏れる。フィルタの「ゲイン」で +10 dB ほど上げる
 3. 録画のファイル名は OBS の既定（`2026-09-30 19-21-27.mp4`）のままにする。開始時刻をここから読む。
 4. **解いた tmux ペインは、振り返りが済むまで閉じない。** スクロールバックはペインを閉じると消える
-   （`clear` では消えない。保持は `history-limit 100000` 行）。ほかの準備は要らない。
+   （`clear` では消えない。保持は `history-limit 100000` 行）。
+5. **コードは vim で書く。** undo の履歴は dotfiles の `_vimrc` で `~/.vim/undo/` に残るので、ほかの準備は要らない。
+   vim の外（Claude の Edit・別のエディタ）で同じファイルを書き換えると、そのファイルの履歴は読めなくなる。
+   解いている途中で Claude に直させたいときは、別のファイルに書かせる。
 
 保存ごとの版まで確実に残したい回だけ、裏のウィンドウで `watch_src.py` を動かしてもよい（`.snap/<日時>_save-<名前>` が残る）:
 `tmux new-window -d -n snap "python3 /mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp/tools/retro/watch_src.py '$PWD'"`、
@@ -64,8 +70,15 @@ icpc-team-2026 は非公開、このリポジトリは公開なので、例を�
 
   `<プロンプト>$ python3 main.py < input.txt` の行で区切ると、試行ごとの出力の列になる。
   デバッグ表示（`l=-1,r=0のときcountの値は0` など）は、そのとき何を疑っていたかの証拠になる。
-- `.snap/` があれば `ls <問題フォルダ>/.snap/`。保存の時刻の並びがそのまま版の年表になる。
-  無ければ版は画面から読む（手順 3）。全部は読まず、スクロールバックで出力が変わった所の前後に絞る。
+- コードの変更: 解いたファイルごとに、編集した環境（WSL）の `python3` で取り出す:
+
+  ```bash
+  python3 /mnt/c/Users/takum/dev/atcoder/atcoder-wsl-cpp/tools/retro/undo_versions.py main.py --out <scratchpad>/retro
+  ```
+
+  `changes.txt` に「時刻・番号・保存したか・差分の行」が変更ごとに並び、各変更の直後の中身が
+  `<日時>_u<番号>[_s<保存番号>].py` で残る。「履歴がありません」と出たら、`.snap/` か録画の画面から版を読む
+  （全部は読まず、スクロールバックで出力が変わった所の前後に絞る）。
 - Claude との会話:
 
   ```bash
@@ -97,14 +110,14 @@ py -3.13 tools/retro/frames.py "<録画>.mp4" --out <scratchpad>/retro --from 23
 
 ### 4. 年表を作る
 
-時刻はどれも日本時間にそろっている（録画名・`.snap` の名前・`claude_log.py` の出力）。
-スクロールバックの各実行には、録画の画面で同じ出力が映ったコマの時刻を当てる。
+時刻はどれも日本時間にそろっている（録画名・`changes.txt`・`.snap` の名前・`claude_log.py` の出力）。
+スクロールバックの各実行は、その直前の保存の時刻に置く（迷ったら録画の画面で同じ出力が映ったコマを見る）。
 発言・実行・版・会話を 1 本の時刻順に並べ、**考えが切り替わった所**で段階に区切る
 （方針を決めた／サンプルが通った／ランダム比較で崩れた／書き直した／解説を読んだ、など）。
 
 ### 5. 途中の版を検証する
 
-意味のある版（各段階の最後・バグを入れた版・直した版）を `.snap/` から選び（無ければ画面から書き起こし）、
+意味のある版（各段階の最後・バグを入れた版・直した版）を `undo_versions.py` の出力（無ければ `.snap/` か画面）から選び、
 `<問題フォルダ>/history/NN_<何をした版か>.<拡張子>` に写す（`.snap/` はコミットしないので、残す版はここに入れる）。
 
 愚直解と入力の生成を `gen.py`（scratchpad）に書き、全版をまとめて突き合わせる:
@@ -152,7 +165,7 @@ Artifact として公開し（アイコンは `timeline`）、URL を `trajector
 
 ### 8. 確かめてからコミットする
 
-- ページと md に書いた数字（不一致件数・反例・時刻）が、手順 5 の出力・スクロールバック・`.snap`・TSV に一致するか見直す。
+- ページと md に書いた数字（不一致件数・反例・時刻）が、手順 5 の出力・`changes.txt`・スクロールバック・TSV に一致するか見直す。
   事実と合わない記述は残さない（`report-review.md` の考え方。必要なら `report-reviewer` を回す）。
 - コミットするのは `trajectory.md` `minutes.md` `retrospective.html` `history/`。
   **録画・音声・TSV・コマ画像・`.snap/` は入れない。**
@@ -160,7 +173,7 @@ Artifact として公開し（アイコンは `timeline`）、URL を `trajector
 
 ## 道具の置き場所
 
-- `tools/retro/`: 上の道具と共通部品 `rectime.py`。任意の `watch_src.py` は WSL の `python3`（標準ライブラリだけ）で動かす。
+- `tools/retro/`: 上の道具と共通部品 `rectime.py`。`undo_versions.py` と任意の `watch_src.py` は WSL の `python3`（標準ライブラリだけ）で動かす。
   ほかは Windows の `py -3.13` で動かす（faster-whisper・openai・python-dotenv・soundfile・Pillow が入っている）。
   `verify_versions.py` は WSL の `python3` でも動く。
 - 声の分離: `~/dev/voice-lab/.venv/Scripts/audio-separator.exe`（モデル `UVR-MDX-NET-Voc_FT`）。
