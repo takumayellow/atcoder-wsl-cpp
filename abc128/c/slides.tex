@@ -1,0 +1,294 @@
+\documentclass[dvipdfmx,aspectratio=169]{beamer}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{pxjahyper}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,backgrounds,fit}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+\title[ABC128 C]{AtCoder ABC128 -- C\\\small Switches の解説}
+\author{}
+\date[ABC128]{AtCoder Beginner Contest 128 / 300 点}
+
+% よく使う色
+\definecolor{ok}{RGB}{0,140,70}
+\definecolor{ng}{RGB}{200,30,30}
+\definecolor{onc}{RGB}{240,180,0}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%====================================================================
+\begin{frame}{問題の概要}
+  \begin{itemize}
+    \item スイッチが $N$ 個（各 ON/OFF），電球が $M$ 個ある．
+    \item 電球 $i$ は $k_i$ 個のスイッチ $s_{i,1},\ldots,s_{i,k_i}$ につながっている．
+    \item \textbf{電球 $i$ が点灯する条件}：つながっているスイッチのうち
+      \textbf{ON の個数} $\equiv p_i \pmod 2$．
+      \begin{itemize}
+        \item $p_i = 0$ なら「ON が偶数本」，$p_i = 1$ なら「ON が奇数本」．
+      \end{itemize}
+    \item \textbf{求めるもの}：$M$ 個すべてが点灯する ON/OFF の組み合わせの\textbf{総数}．
+  \end{itemize}
+
+  \vspace{0.6em}
+  \textbf{制約}: $1 \le N, M \le 10$,\quad $1 \le k_i \le N$,\quad $p_i \in \{0,1\}$
+
+  \vspace{0.4em}
+  \begin{block}{この制約が答えを教えている}
+    $N \le 10$ $\Rightarrow$ 組み合わせは高々 $2^{10} = 1024$ 通り．\textbf{全部試してよい．}
+  \end{block}
+\end{frame}
+
+%====================================================================
+\begin{frame}{まず制約を読む -- 全探索が許されるか見積もる}
+  \begin{columns}
+    \begin{column}{0.54\textwidth}
+      スイッチ 1 個につき ON/OFF の 2 通りなので，全体で
+      \[
+        2^N \le 2^{10} = 1024 \ \text{通り}
+      \]
+      1 通りあたりの判定コストは
+      \[
+        \textstyle\sum_i k_i \le M\cdot N \le 100
+      \]
+      合計しても $1024 \times 100 \approx 10^5$ 回．
+      \vspace{0.5em}
+
+      \begin{alertblock}{典型パターン}
+        「$N \le 20$ 程度」$+$「各要素が 2 択」\\
+        $\Rightarrow$ \textbf{bit 全探索を疑う}
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=0.8]
+        \draw[-{Latex}] (0,0) -- (0,4.3) node[above]{$2^N$};
+        \draw[-{Latex}] (0,0) -- (5.2,0) node[right]{$N$};
+        \foreach \n/\h in {2/0.2,4/0.4,6/0.8,8/1.6,10/3.2}{
+          \fill[ok!60] (\n*0.45-0.15,0) rectangle (\n*0.45+0.15,\h);
+          \node[font=\tiny] at (\n*0.45,-0.25) {\n};
+        }
+        \node[font=\scriptsize,anchor=west] at (4.6,3.2) {$1024$};
+        \draw[ng,dashed] (0,4.0) -- (5.0,4.0)
+          node[right,font=\scriptsize,ng,anchor=south east] at (5.0,4.0) {実行時間の壁 (遠い)};
+      \end{tikzpicture}
+
+      \vspace{0.3em}
+      {\scriptsize $N=10$ でも $1024$．壁までまだ何桁も余裕がある．}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%====================================================================
+\begin{frame}{アイデア(1) -- ON/OFF の並びを整数 1 個で表す}
+  $N$ 個の ON/OFF は長さ $N$ の $0/1$ 列．これを整数 \texttt{bit} の 2 進表記とみなす．
+
+  \vspace{0.5em}
+  \begin{center}
+    \begin{tikzpicture}[scale=1.0]
+      % ビット箱
+      \foreach \i/\v/\c in {0/1/onc, 1/0/white, 2/1/onc}{
+        \draw[thick] (\i*1.9,0) rectangle (\i*1.9+1.2,0.9);
+        \fill[\c] (\i*1.9+0.02,0.02) rectangle (\i*1.9+1.18,0.88);
+        \draw[thick] (\i*1.9,0) rectangle (\i*1.9+1.2,0.9);
+        \node at (\i*1.9+0.6,0.45) {\v};
+      }
+      \node[font=\scriptsize] at (0.6,-0.35) {第 2 bit};
+      \node[font=\scriptsize] at (2.5,-0.35) {第 1 bit};
+      \node[font=\scriptsize] at (4.4,-0.35) {第 0 bit};
+      \node[font=\scriptsize] at (0.6,1.3) {sw2 : ON};
+      \node[font=\scriptsize] at (2.5,1.3) {sw1 : OFF};
+      \node[font=\scriptsize] at (4.4,1.3) {sw0 : ON};
+      \node[anchor=west] at (5.9,0.45) {$\texttt{bit} = 101_{(2)} = 5$};
+    \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.3em}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \centering
+      {\small
+      \begin{tabular}{ccccc}
+        \toprule
+        \texttt{bit} & 2進 & sw2 & sw1 & sw0\\
+        \midrule
+        0 & 000 & OFF & OFF & OFF\\
+        1 & 001 & OFF & OFF & \textbf{ON}\\
+        2 & 010 & OFF & \textbf{ON} & OFF\\
+        $\vdots$ & & & & \\
+        7 & 111 & \textbf{ON} & \textbf{ON} & \textbf{ON}\\
+        \bottomrule
+      \end{tabular}}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \texttt{bit} を $0$ から $2^N-1$ まで動かせば，
+      \textbf{全パターンをちょうど 1 回ずつ}列挙できる．
+
+      \vspace{0.5em}
+      「スイッチ $v$ は ON か？」は
+      \[
+        \texttt{bit \& (1 << v)} \ne 0
+      \]
+      で判定できる．
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%====================================================================
+\begin{frame}{アイデア(2) -- 1 パターンを固定して電球を判定する}
+  \begin{columns}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=0.9,
+        sw/.style={draw,thick,minimum width=0.9cm,minimum height=0.5cm,font=\small},
+        bulb/.style={draw,thick,circle,minimum size=0.8cm,font=\small}]
+        \node[font=\scriptsize,anchor=west] at (-0.5,2.9) {黄 $=$ ON};
+        \node[sw,fill=onc] (s1) at (0,2.2) {sw1};
+        \node[sw]          (s2) at (0,1.2) {sw2};
+        \node[sw,fill=onc] (s3) at (0,0.2) {sw3};
+        \node[bulb,fill=ok!25] (b1) at (2.6,1.9) {$b_1$};
+        \node[bulb,fill=ng!20] (b2) at (2.6,0.5) {$b_2$};
+        \draw (s1) -- (b1); \draw (s2) -- (b1); \draw (s3) -- (b1);
+        \draw (s2) -- (b2); \draw (s3) -- (b2);
+      \end{tikzpicture}
+
+      \vspace{0.4em}
+      {\scriptsize
+        $b_1$: ON は 2 本 $\Rightarrow 0$，$p_1{=}0$ \textcolor{ok}{\textbf{OK}}\\
+        $b_2$: ON は 1 本 $\Rightarrow 1$，$p_2{=}0$ \textcolor{ng}{\textbf{NG}}\\
+        $\Rightarrow$ このパターンは失格}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \texttt{bit} を 1 つ固定したら，電球 $i$ ごとに
+      \begin{enumerate}
+        \item つながっているスイッチのうち ON の本数 \texttt{con} を数える
+        \item \texttt{con \% 2 == p[i]} なら点灯，違えば\textbf{このパターンは失格}
+      \end{enumerate}
+
+      \vspace{0.5em}
+      $M$ 個すべて点灯したパターンだけを数え上げれば，それが答え．
+
+      \vspace{0.5em}
+      \begin{block}{計算量}
+        $O(2^N \cdot \sum k_i) \le 1024 \times 100 \approx 10^5$
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%====================================================================
+\begin{frame}[fragile]{擬似コードと実装の要点}
+\begin{verbatim}
+res = 0
+for bit in 0 .. 2^N - 1:          # 全パターン列挙
+    ok = true
+    for i in 0 .. M-1:
+        con = (s[i] のうち bit で ON のスイッチの本数)
+        if con % 2 != p[i]: ok = false
+    if ok: res += 1
+\end{verbatim}
+
+  \vspace{0.2em}
+  実装で効くのは 3 か所だけ:
+  \begin{itemize}
+    \item \verb|int a; cin >> a; --a;| \quad 入力は 1-indexed．
+      \textbf{0-indexed に直してビット位置と一致}させる．
+      忘れるとスイッチ $N$ が範囲外ビットを指し，常に OFF 扱いになる．
+    \item \verb|for (int bit = 0; bit < (1<<N); ++bit)| \quad
+      $2^N$ が全パターン数．$\le$ ではなく $<$．
+    \item \verb|if (bit & (1<<v)) ++con;| \quad
+      返るのは $0$ か\textbf{非 $0$}（$1$ とは限らない）．真偽値として使う．
+  \end{itemize}
+\end{frame}
+
+%====================================================================
+\begin{frame}{サンプル 1 を全部書き出す（答え: 1）}
+  入力: $N=2$, 電球1 = \{sw1, sw2\} で $p_1=0$（偶数），電球2 = \{sw2\} で $p_2=1$（奇数）
+
+  \vspace{0.5em}
+  \centering
+  \begin{tabular}{ccccccc}
+    \toprule
+    \texttt{bit} & sw1 & sw2 & 電球1 の ON 本数 & $\equiv p_1{=}0$? & 電球2 の ON 本数 & $\equiv p_2{=}1$?\\
+    \midrule
+    00 & OFF & OFF & 0 & \textcolor{ok}{OK}  & 0 & \textcolor{ng}{NG}\\
+    01 & ON  & OFF & 1 & \textcolor{ng}{NG}  & 0 & \textcolor{ng}{NG}\\
+    10 & OFF & ON  & 1 & \textcolor{ng}{NG}  & 1 & \textcolor{ok}{OK}\\
+    \textbf{11} & \textbf{ON} & \textbf{ON} & \textbf{2} & \textcolor{ok}{\textbf{OK}} & \textbf{1} & \textcolor{ok}{\textbf{OK}}\\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.8em}
+  \raggedright
+  両方 OK なのは \texttt{bit}$=11$ の 1 通りだけ $\Rightarrow$ 出力 \textbf{1}．
+
+  \vspace{0.4em}
+  {\small サンプル 3 ($N=5$, 条件 2 本) の答え $8$ は，
+  \textbf{どの電球にもつながっていない sw4} が自由（$\times 2$）で，
+  残りの自由度も含めて $2^3 = 8$．}
+\end{frame}
+
+%====================================================================
+\begin{frame}{一段深い見方 -- 実は GF(2) 上の連立一次方程式}
+  スイッチ $v$ の状態を $x_v \in \{0,1\}$ と置くと，電球 $i$ の条件はそのまま
+  \[
+    x_{s_{i,1}} \oplus x_{s_{i,2}} \oplus \cdots \oplus x_{s_{i,k_i}} = p_i
+    \qquad (\oplus = \text{XOR} = \bmod 2 \text{ の足し算})
+  \]
+
+  つまり \textbf{$\bmod 2$ の連立一次方程式の解の個数}を数える問題．線形代数から
+  \[
+    \text{解の個数} =
+    \begin{cases}
+      0 & (\text{矛盾するとき})\\[2pt]
+      2^{\,N - \mathrm{rank}} & (\text{矛盾しないとき})
+    \end{cases}
+  \]
+
+  \vspace{0.3em}
+  \centering
+  \begin{tabular}{ccccc}
+    \toprule
+    サンプル & $N$ & 式の本数 & rank & 解の個数\\
+    \midrule
+    1 & 2 & 2 & 2 & $2^{2-2} = \mathbf{1}$\\
+    2 & 2 & 3 & \multicolumn{2}{c}{矛盾あり $\Rightarrow \mathbf{0}$}\\
+    3 & 5 & 2 & 2 & $2^{5-2} = \mathbf{8}$\\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.6em}
+  \raggedright
+  {\small 本問は $N \le 10$ なので全探索で十分．\textbf{$N$ が $10^5$ 規模なら
+  掃き出し法（Gauss--Jordan over GF(2)，\texttt{bitset} で高速化）}に切り替える．}
+\end{frame}
+
+%====================================================================
+\begin{frame}[fragile]{まとめ}
+  \begin{enumerate}
+    \item \textbf{制約を先に読む．} $N \le 20$ 程度 $+$ 各要素 2 択なら bit 全探索．
+    \item \textbf{bit 全探索の型}：
+      \verb|for (int bit = 0; bit < (1<<N); ++bit)| と \verb|bit & (1<<v)|．
+    \item \textbf{入力の 1-indexed は読み込み時に \texttt{-{}-a} で潰す．}
+      番号とビット位置を一致させる．
+    \item \textbf{XOR 条件の数え上げ $=$ GF(2) の連立方程式．}
+      答えは $0$ か $2^{N-\mathrm{rank}}$．全探索が間に合わない規模ならこちら．
+  \end{enumerate}
+
+  \vspace{0.8em}
+  \textbf{同系統の問題}
+  \begin{itemize}
+    \item ABC079 C -- Train Ticket（$\pm$ の全探索）
+    \item ABC147 C -- HonestOrUnkind2（$2^N$ 全探索 $+$ 整合性判定．骨格がほぼ同じ）
+    \item ABC167 C -- Skill Up（$2^N \times$ コスト計算）
+  \end{itemize}
+\end{frame}
+
+\end{document}

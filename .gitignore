@@ -20,6 +20,16 @@ session.json
 *.o
 main
 
+# actest が実行のたびに残すソースの控え（振り返り用。手元にだけ置く）
+.snap/
+
+# tools/build_slides.sh --preview が吐くページ画像（目視確認用。毎回作り直す）
+.slides_preview/
+
+# .NET のビルド成果物（main.cs / main.csproj から再生成できる）
+bin/
+obj/
+
 # TeX intermediate files
 *.aux
 *.dvi
@@ -30,3 +40,13 @@ main
 *.snm
 *.toc
 *.vrb
+
+# 原本（撮影画像・スキャン・図の書き出し・配布された問題 PDF）は Box に置き、リポジトリには入れない
+# 置き場所の対応は docs/handwritten-memos.md
+*.jpg
+*.jpeg
+*.png
+*.heic
+memo.pdf
+*_DESIGN_REF.pdf
+*-problemset.pdf

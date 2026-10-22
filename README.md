@@ -226,6 +226,8 @@ actest
 **動作:**
 - C++: `g++ -std=c++17 -Wall -I <ac-library> main.cpp` でコンパイル後、`oj t` でテスト
 - Python: `oj t -c "python3 main.py"` でテスト
+- 実行のたびにソースを `.snap/<日時>_<ok|ng|ce>.<拡張子>` に控える（前回と同じ内容なら控えない。`ACTEST_SNAPSHOT=0` で止まる）。
+  解いた過程を後から振り返るための記録で、`.claude/skills/solve-retro` が使う。コミットはしない
 
 **online-judge-tools (oj) の挙動:**
 - `oj t` はカレントディレクトリ配下の `test/` にあるサンプルケースを実行します
@@ -295,6 +297,29 @@ actest
 acsub
 ```
 
+### AC した後に解説を残す
+
+考え方を忘れないうちに `explanation.md` を書いておくと、後で `git grep` で引ける。
+
+```bash
+cd abc128/c
+../../tools/new_explanation.sh   # 雛形を生成（タイトル・URL は自動補完）
+
+# 図で見せたいときは Beamer スライドも（explanation.md の再構成）
+../../tools/new_slides.sh
+../../tools/build_slides.sh . --preview   # ビルド + 全ページを PNG 化して目視確認
+```
+
+- 書き方・節構成・禁止事項: **[`tools/explanation_guide.md`](tools/explanation_guide.md)**
+- スライドの作り方・TikZ の型・落とし穴: **[`tools/slides_guide.md`](tools/slides_guide.md)**
+- Claude Code なら **`/atcoder-explain abc128/c [--slides]`** で、検証・資料作成・コード注釈まで一括
+
+実例: [`abc128/c/`](abc128/c/) / [`arc127/a/`](arc127/a/)（どちらも explanation.md + slides.pdf）
+
+紙に書いた考察メモは、撮影した原本（手書きの PDF も）を Box に置き、メモを手書き風に描き直したページと振り返りを `thinking.tex` → `thinking.pdf` に残す。
+置き場所・問題の特定方法・書き方: **[`docs/handwritten-memos.md`](docs/handwritten-memos.md)**（例: [`abc048/b/thinking.pdf`](abc048/b/thinking.pdf)）。
+Claude Code では `atcoder-handmemo` スキルで一通り進む。
+
 ---
 
 ## フォルダ構成
@@ -307,11 +332,26 @@ atcoder-wsl-cpp/
 ├── submit.bat           # Windows用: 提出
 │
 ├── tools/
-│   ├── acx              # WSL用: メインスクリプト
-│   ├── setup_wsl.sh     # WSL環境構築（acc, oj インストール）
-│   ├── setup_env.sh     # テンプレート登録
-│   ├── test_code.sh     # テスト実行スクリプト
+│   ├── acx                    # WSL用: メインスクリプト
+│   ├── setup_wsl.sh           # WSL環境構築（acc, oj インストール）
+│   ├── setup_env.sh           # テンプレート登録
+│   ├── test_code.sh           # テスト実行スクリプト
+│   ├── new_explanation.sh     # 解説資料 explanation.md の雛形生成
+│   ├── explanation_guide.md   # 解説資料の書き方（フォーマット定義）
+│   ├── new_slides.sh          # 解説スライド slides.tex + latexmkrc の雛形生成
+│   ├── build_slides.sh        # スライドのビルド (+ --preview で全ページ PNG 化)
+│   ├── slides_guide.md        # 解説スライド (Beamer) の作り方
+│   ├── retro/                 # 解いた過程の振り返り（solve-retro スキル）
+│   │   ├── undo_versions.py   #   vim の undo の履歴から、変更ごとの版を時刻つきで取り出す
+│   │   ├── watch_src.py       #   （任意）解いている間、保存のたびにソースを .snap/ へ控える
+│   │   ├── transcribe_rec.py  #   録画の独り言を時刻つきで文字起こし (Groq Whisper)
+│   │   ├── frames.py          #   録画のコマを時刻ラベルつきの一覧画像に
+│   │   ├── claude_log.py      #   Claude Code との会話を時間帯で抜き出す
+│   │   └── verify_versions.py #   途中の版を愚直解と突き合わせる
 │   └── templates/
+│       ├── explanation.md      # 解説資料テンプレート
+│       ├── slides.tex          # 解説スライドテンプレート (TikZ 込み)
+│       ├── latexmkrc           # platex + dvipdfmx 設定
 │       ├── cpp/
 │       │   ├── main.cpp        # C++ テンプレート
 │       │   └── template.json   # acc設定
@@ -324,8 +364,12 @@ atcoder-wsl-cpp/
 ├── abc231/              # コンテストフォルダ（自動生成）
 │   ├── contest.acc.json
 │   └── a/
-│       ├── main.cpp     # ソースコード
-│       └── test/        # サンプルケース
+│       ├── main.cpp         # ソースコード
+│       ├── explanation.md   # 解説資料（任意・書いたときだけ）
+│       ├── slides.tex       # 解説スライド（任意）
+│       ├── latexmkrc        #   〃 のビルド設定
+│       ├── slides.pdf       #   〃 の成果物（追跡する）
+│       └── test/            # サンプルケース
 │           ├── sample-1.in
 │           ├── sample-1.out
 │           └── ...

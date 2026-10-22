@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- AtCoder のジャッジは .NET 9.0.8 / C# 13.0 -->
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Console.ReadLine() が string? を返すため、競プロでは警告を切る -->
+    <Nullable>disable</Nullable>
+    <AssemblyName>main</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <!-- 既定のグロブだと同じフォルダの .cs を全部拾って Main が重複するので、
+       コンパイル対象を 1 ファイルに固定する。
+       既定は main.cs。別ファイルを動かしたいときは
+         dotnet run -p:F=sub.cs
+       のように F で上書きする。 -->
+  <PropertyGroup>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <F Condition="'$(F)' == ''">main.cs</F>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(F)" />
+  </ItemGroup>
+
+</Project>

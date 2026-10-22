@@ -1,0 +1,1 @@
+a=gets.split.map &:to_i;a[gets.ord%3-1]=9e9;p a.min

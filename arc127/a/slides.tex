@@ -1,0 +1,290 @@
+\documentclass[dvipdfmx,aspectratio=169]{beamer}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{pxjahyper}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,backgrounds,decorations.pathreplacing}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+\title[ARC127 A]{AtCoder ARC127 -- A\\\small Leading 1s の解説}
+\author{}
+\date[ARC127]{AtCoder Regular Contest 127 / 300 点}
+
+\definecolor{ok}{RGB}{0,140,70}
+\definecolor{ng}{RGB}{200,30,30}
+\definecolor{hi}{RGB}{240,180,0}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%====================================================================
+\begin{frame}{問題の概要}
+  整数 $x$ に対し，\textbf{$f(x) = x$ を十進表記したときの先頭から連続する $1$ の個数}
+  と定める．
+
+  \vspace{0.4em}
+  \begin{center}
+    \begin{tikzpicture}[scale=1.0]
+      \foreach \i/\d/\c in {0/1/hi, 1/1/hi, 2/1/hi, 3/0/white, 4/1/white}{
+        \draw[thick] (\i*0.85,0) rectangle (\i*0.85+0.75,0.75);
+        \fill[\c] (\i*0.85+0.03,0.03) rectangle (\i*0.85+0.72,0.72);
+        \draw[thick] (\i*0.85,0) rectangle (\i*0.85+0.75,0.75);
+        \node at (\i*0.85+0.375,0.375) {\d};
+      }
+      \draw[decorate,decoration={brace,amplitude=5pt},ok,thick]
+        (0,0.95) -- (2.35,0.95) node[midway,above,ok,font=\small] {連続する $1$ が 3 個};
+      \node[anchor=west,font=\small] at (4.5,0.375) {$\Rightarrow f(11101) = 3$};
+      \node[anchor=west,font=\scriptsize,ng] at (2.6,-0.35) {ここで途切れる};
+    \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.4em}
+  他の例: $f(1)=1$,\ \ $f(2)=0$,\ \ $f(10)=1$,\ \ $f(11)=2$,\ \ $f(101)=1$
+
+  \vspace{0.5em}
+  \textbf{求めるもの}: $f(1)+f(2)+\cdots+f(N)$
+
+  \vspace{0.3em}
+  \begin{alertblock}{制約}
+    $1 \le N \le 10^{15}$ \quad（高々 16 桁）$\Rightarrow$
+    \textbf{1 個ずつ $f$ を計算する $O(N)$ は論外．数え方を変える必要がある．}
+  \end{alertblock}
+\end{frame}
+
+%====================================================================
+\begin{frame}{核心 -- $f$ を $0/1$ 判定の和にバラす}
+  $f(x)$ をそのまま計算しようとすると $x$ ごとのループになって詰む．そこで
+  \[
+    \boxed{\ f(x) = \sum_{k \ge 1} \bigl[\,x \text{ の先頭 } k \text{ 桁がすべて } 1\,\bigr]\ }
+  \]
+  （$[\cdot]$ は成り立てば $1$，そうでなければ $0$）
+
+  \vspace{0.1em}
+  \begin{columns}
+    \begin{column}{0.48\textwidth}
+      \centering
+      {\small
+      \begin{tabular}{ccc}
+        \toprule
+        $k$ & $x=111$ の先頭 $k$ 桁 & 判定\\
+        \midrule
+        1 & \texttt{1}   & \textcolor{ok}{真}\\
+        2 & \texttt{11}  & \textcolor{ok}{真}\\
+        3 & \texttt{111} & \textcolor{ok}{真}\\
+        4 & （桁が足りない） & \textcolor{ng}{偽}\\
+        \bottomrule
+      \end{tabular}}
+
+      \vspace{0.3em}
+      {\small 真になる $k$ はちょうど $3$ 個 $= f(111)$}
+
+      \vspace{0.2em}
+      {\scriptsize ※ 同じ $x$ を複数回数えるのは\textbf{仕様}．\\
+      それがちょうど $f(x)$ になる．}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      和の順序を入れ替えると
+      \[
+        \text{答え} = \sum_{k \ge 1} \#\{\,x \le N : \text{先頭 } k \text{ 桁が全部 } 1\,\}
+      \]
+
+      \vspace{0.3em}
+      \begin{block}{何が起きたか}
+        \textbf{$x$ のループ（$10^{15}$ 回）が\\
+        $k$ のループ（高々 16 回）に化けた．}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%====================================================================
+\begin{frame}{先頭が固定された数の集合 $=$ 区間の集まり}
+  $\mathrm{head} = \underbrace{11\cdots1}_{k \text{ 個}}$ とおく．
+  「先頭 $k$ 桁が $1$ で，後ろに $i$ 桁続く数」は，$L = \mathrm{head}\times 10^{i}$ として
+  \[
+    \boxed{\ [\,L,\ L + 10^{i} - 1\,] \quad \text{のちょうど } 10^{i} \text{ 個}\ }
+  \]
+
+  \vspace{0.2em}
+  \begin{center}
+    \begin{tikzpicture}[scale=1.0]
+      \draw[-{Latex},thick] (-0.3,0) -- (11.0,0) node[right]{};
+      % i=0
+      \fill[ok] (0.6,-0.08) rectangle (0.75,0.08);
+      \node[font=\scriptsize,anchor=south] at (0.7,0.15) {111};
+      \node[font=\scriptsize,anchor=north,ok] at (0.7,-0.2) {$i{=}0$: 1 個};
+      % i=1
+      \draw[ok,line width=6pt] (2.6,0) -- (3.5,0);
+      \node[font=\scriptsize,anchor=south] at (3.05,0.2) {1110 \textasciitilde\ 1119};
+      \node[font=\scriptsize,anchor=north,ok] at (3.05,-0.2) {$i{=}1$: 10 個};
+      % i=2
+      \draw[ok,line width=6pt] (5.6,0) -- (8.0,0);
+      \node[font=\scriptsize,anchor=south] at (6.8,0.2) {11100 \textasciitilde\ 11199};
+      \node[font=\scriptsize,anchor=north,ok] at (6.8,-0.2) {$i{=}2$: 100 個};
+      \node[font=\scriptsize,anchor=west] at (9.2,0) {$\cdots$};
+      \node[font=\small,anchor=west] at (-0.3,0.9) {例: $k=3$（$\mathrm{head}=111$）};
+    \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.6em}
+  桁数が違うので，$i$ が違う区間どうしは\textbf{重ならない}．
+  よって各 $k$ について「区間の個数を足すだけ」でよい．
+\end{frame}
+
+%====================================================================
+\begin{frame}{$N$ で打ち切る -- 3 つのケース}
+  区間 $[L,\ R-1]$（$R = L + 10^{i}$）に対し，$N$ 以下の部分だけを数える．
+
+  \vspace{0.4em}
+  \begin{center}
+    \begin{tikzpicture}[scale=1.0]
+      % ケース1
+      \draw[-{Latex}] (0,2.0) -- (9.5,2.0);
+      \draw[ok,line width=6pt] (1.0,2.0) -- (3.2,2.0);
+      \draw[ng,thick,dashed] (7.0,1.6) -- (7.0,2.4) node[above,ng,font=\scriptsize]{$N$};
+      \node[font=\scriptsize,anchor=west] at (9.6,2.0) {};
+      \node[font=\scriptsize,anchor=east] at (-0.1,2.0) {(A)};
+      \node[font=\scriptsize,anchor=south] at (2.1,2.15) {丸ごと入る};
+      \node[font=\scriptsize,anchor=west,ok] at (3.4,2.0) {$+\,10^{i}$ 個 \ (\texttt{R <= n+1})};
+      % ケース2
+      \draw[-{Latex}] (0,1.0) -- (9.5,1.0);
+      \draw[ok,line width=6pt] (5.0,1.0) -- (7.0,1.0);
+      \draw[gray!60,line width=6pt] (7.0,1.0) -- (8.6,1.0);
+      \draw[ng,thick,dashed] (7.0,0.6) -- (7.0,1.4) node[above,ng,font=\scriptsize]{$N$};
+      \node[font=\scriptsize,anchor=east] at (-0.1,1.0) {(B)};
+      \node[font=\scriptsize,anchor=west,ok] at (8.8,1.0) {$+\,(N-L+1)$};
+      \node[font=\scriptsize,anchor=south] at (6.0,1.15) {途中で $N$ に到達};
+      % ケース3
+      \draw[-{Latex}] (0,0.0) -- (9.5,0.0);
+      \draw[gray!60,line width=6pt] (7.8,0.0) -- (9.2,0.0);
+      \draw[ng,thick,dashed] (7.0,-0.4) -- (7.0,0.4) node[above,ng,font=\scriptsize]{$N$};
+      \node[font=\scriptsize,anchor=east] at (-0.1,0.0) {(C)};
+      \node[font=\scriptsize,anchor=south] at (8.5,0.15) {$L > N$};
+      \node[font=\scriptsize,anchor=west,ng] at (9.4,0.0) {$+\,0$};
+    \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.3em}
+  (B)(C) はどちらも\textbf{以降の $i$ でも $L$ が 10 倍ずつ大きくなる}ので，
+  そこで \texttt{break} してよい．
+\end{frame}
+
+%====================================================================
+\begin{frame}[fragile]{擬似コード}
+\begin{verbatim}
+ans = 0 ; head = 0
+for k in 1..16:                   # N <= 10^15 は高々 16 桁
+    head = head * 10 + 1          # 1, 11, 111, ...
+    L = head
+    for i in 0..15:
+        if L > N: break           # (C) この先はすべて範囲外
+        R = L + 10^i              # 区間は [L, R-1]
+        if R <= N + 1:
+            ans += R - L          # (A) 丸ごと入る = 10^i 個
+        else:
+            ans += N - L + 1      # (B) 途中まで
+            break
+        L *= 10
+\end{verbatim}
+
+  \vspace{0.2em}
+  \textbf{計算量} $O(D^2) \approx 16\times 16 = 256$ 回（$D$ = 桁数）．
+  \textbf{$N$ の大きさに依存しない．}
+\end{frame}
+
+%====================================================================
+\begin{frame}{サンプル 2（$N=120$，答え $44$）を手で追う}
+  \centering
+  {\small
+  \begin{tabular}{ccccclr}
+    \toprule
+    $k$ & head & $i$ & $L$ & 区間 $[L, R-1]$ & 判定 & 加算\\
+    \midrule
+    1 & 1 & 0 & 1 & $[1,1]$ & (A) 丸ごと & $+1$\\
+    1 & 1 & 1 & 10 & $[10,19]$ & (A) 丸ごと & $+10$\\
+    1 & 1 & 2 & 100 & $[100,199]$ & (B) $120$ で打ち切り & $+21$\\
+    \midrule
+    2 & 11 & 0 & 11 & $[11,11]$ & (A) 丸ごと & $+1$\\
+    2 & 11 & 1 & 110 & $[110,119]$ & (A) 丸ごと & $+10$\\
+    2 & 11 & 2 & 1100 & --- & (C) $L>120$ & break\\
+    \midrule
+    3 & 111 & 0 & 111 & $[111,111]$ & (A) 丸ごと & $+1$\\
+    3 & 111 & 1 & 1110 & --- & (C) $L>120$ & break\\
+    \midrule
+    4 & 1111 & 0 & 1111 & --- & (C) $L>120$ & break\\
+    \bottomrule
+  \end{tabular}}
+
+  \vspace{0.6em}
+  \raggedright
+  小計は $k=1$: $\mathbf{32}$，$k=2$: $\mathbf{11}$，$k=3$: $\mathbf{1}$
+  $\Rightarrow$ 合計 $32+11+1 = \mathbf{44}$ \ \textcolor{ok}{\checkmark}
+
+  {\small それぞれ「先頭が $1$ の数の個数」「先頭が $11$ の数の個数」「先頭が $111$ の数の個数」．}
+\end{frame}
+
+%====================================================================
+\begin{frame}[fragile]{落とし穴 -- \texttt{if L > n: break} を省くと静かに壊れる}
+  \begin{columns}
+    \begin{column}{0.52\textwidth}
+      $L > N$ のとき，(B) の枝が実行されると
+      \[
+        N - L + 1 \le 0
+      \]
+      すなわち\textbf{負の数を足してしまう．}
+
+      \vspace{0.6em}
+      引き算で個数を出すコードは，範囲外ガードを忘れると
+      \textbf{例外も出さずに答えだけが壊れる}．
+      個数を出す式を書いたら
+      「\textbf{この式が負になる入力はあるか}」を必ず確認する．
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{block}{実測（ガードを外した版）}
+        \begin{itemize}
+          \item $N=1$ の出力: \\ \texttt{-1234567901234542}（正解 $1$）
+          \item $1 \le N \le 500$ の\\ \textbf{500 通りすべてが不正解}
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.5em}
+  その他の注意点:
+  \begin{itemize}
+    \item \verb|R <= n + 1| は \verb|R - 1 <= n| の言い換え（区間の右端が $N$ 以下）．
+    \item \textbf{Python の int は多倍長なので溢れない．C++ 移植時は \texttt{long long}}
+      （$N$ も $L$ も $10^{15}$ 規模で，\texttt{int} では即オーバーフロー）．
+    \item ループ上限 16 は $N \le 10^{15}$ が 16 桁だから．制約が $10^{18}$ なら 19 に増やす．
+  \end{itemize}
+\end{frame}
+
+%====================================================================
+\begin{frame}{まとめ}
+  \begin{enumerate}
+    \item \textbf{$\sum f(x)$ が重いときは $f$ を $0/1$ 判定の和に分解し，
+      和の順序を入れ替える}（寄与の分解）．
+      \[
+        \sum_x f(x) = \sum_x \sum_k [\,\text{条件}_k(x)\,] = \sum_k \#\{x : \text{条件}_k\}
+      \]
+      $x$ のループが「条件のループ」に化けて，$N$ に依存しない計算量になる．
+    \item \textbf{接頭辞が固定された数の集合 $=$ 区間の和．}
+      $[\mathrm{head}\cdot 10^i,\ \mathrm{head}\cdot 10^i + 10^i - 1]$ を $i$ について足す．
+      桁 DP を持ち出すのは過剰．
+    \item \textbf{区間は半開 $[L, R)$ で持つ}と個数が $R-L$ になり，off-by-one が減る．
+    \item \textbf{「範囲外なら break」のガードを省かない．}
+      引き算で個数を出すコードは負の数を足して静かに壊れる．
+  \end{enumerate}
+
+  \vspace{0.4em}
+  \textbf{同系統の問題}: ABC154 E -- Almost Everywhere Zero，
+  ABC029 D -- 1（桁ごとの寄与），ABC192 D -- Base n
+\end{frame}
+
+\end{document}

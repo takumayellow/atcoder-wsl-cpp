@@ -1,0 +1,163 @@
+% agc017 A - Biscuits の手書きメモの再現と振り返り
+% ビルド: tools/build_thinking.sh agc017/a --preview
+\documentclass[a4paper]{article}
+\usepackage[margin=1.2cm]{geometry}
+\usepackage{handmemo}
+\usepackage{hyperref}
+\pagestyle{empty}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 1 枚目（定式化）
+\begin{memopage}{20260925\_174844.jpg}
+  \hw(0.3,1.3){問}
+  \hwunread(1.1,1.3){問の次の 1 文字}
+
+  \hw(0.7,3.2){A --- Biscuits}
+
+  \hw(1.9,4.3){N}
+  \hwcircle(3.5,4.2)(0.3,0.3)
+  \hwunread(4.1,3.7){N の横の丸囲み}
+  \hwbag(2.8,5.4)(1.1,1.05)
+  \hwbag(4.9,5.15)(0.72,1.0)
+  \hwbag(7.1,5.2)(0.82,1.1)
+  \hw(6.5,5.4){$A_i$}
+  \hwbag(9.15,5.05)(0.56,0.85)
+  \hw(10.2,5.5){-\ \ .}
+  \hw(7.2,7.4){$i$}
+
+  \hwstrike(1.3,10.7){$A_i$}
+  \hw(2.9,10.6){/}
+  \hwstrike(3.6,10.6){$A_i \% 2 = P$}
+  \redpen(9.9,9.3){1 袋ずつの偶奇では決まらない\\→ 選んだ袋の「和」の偶奇に直す}
+  \redarrow(10.9,10.1)(8.0,12.4)
+
+  \hwm(2.6,13.1){\Bigl(\sum c_k A_i\Bigr) \% 2 = P}
+  \hwm(2.6,14.9){c_k = \begin{cases} 1 \\ 0 \end{cases}}
+  \hw(0.6,17.0){count$\,(\,c = [\ \ ]\,)$}
+
+  \hwline(9.9,11.8)(9.8,18.0)
+  \hw(11.0,12.4){2\ \ 0}
+  \hw(11.0,13.2){1\ \ 3}
+  \hwcircle(11.9,14.9)(0.45,0.55)
+  \hw(11.65,14.9){1}
+  \hwcircle(13.2,14.9)(0.4,0.5)
+  \hw(12.95,14.9){3}
+  \hwline(10.9,14.2)(13.7,14.2) \hwline(10.9,15.7)(13.7,15.7)
+  \hwline(10.9,14.2)(11.0,15.7) \hwline(13.7,14.2)(13.8,15.7)
+  \hwunread(10.3,16.6){消した 1 文字}
+  \hw(12.4,17.4){(bother nothing}
+  \redpen(10.3,18.5){奇数 2 つ → 両方選ぶか何も選ばないか\\→ 2 通り $= 2^{N-1}$（サンプルの答え 2）}
+
+  \hw(8.9,19.4){odd は 2 つ}
+  \hw(1.3,20.5){$P = 0$ :}
+  \hw(3.5,20.3){sum : even}
+
+  \hw(2.4,22.5){$2^N$ : とおり}
+  \hw(6.2,22.0){$2^{50}$}
+  \hwline(7.3,21.3)(8.1,22.4) \hwline(8.1,21.3)(7.4,22.5)
+  \redpen(9.2,22.4){N は 50 まで。全部試すのは無理\\→ 場合分けで数える（次のページ）}
+\end{memopage}
+
+% ---------------------------------------------------------------- 2 枚目（場合分けと証明）
+\begin{memopage}{20260925\_174809.jpg}
+  \hw(2.1,2.1){1\ \ 1}
+  \hwline(2.3,2.55)(3.0,2.5)
+  \hw(2.0,2.9){50}
+  \hwline(1.9,3.4)(2.9,3.35)
+  \hw(4.8,2.8){0}
+  \redpen(6.2,2.0){全部偶数で $P=1$ → 0 通り}
+
+  \hw(2.2,4.4){3\ \ 0}
+  \hwline(1.9,4.9)(3.4,4.9)
+  \hw(2.1,5.5){1\ \ 1\ \ 1}
+  \hwline(1.95,5.0)(1.95,6.0) \hwline(3.1,5.0)(3.1,6.0) \hwline(2.0,6.0)(3.1,6.0)
+  \redpen(6.2,5.0){奇数 3 つ、$P=0$ → 答え 4 $= 2^{3-1}$}
+
+  \hw(0.3,7.5){$\forall A_i = $ odd}
+  \hw(4.2,7.5){\large どう選んでもよい}
+  \hw(8.2,7.5){$P=0 : 2^N$}
+  \hw(11.3,7.5){$P=1 : 0$}
+  \redpen(9.6,6.5){この結論は「全部 even」のとき}
+  \redarrow(9.5,6.6)(2.2,7.1)
+
+  \hw(0.7,9.2){$A_i$ has odd}
+  \hwunread(3.9,9.2){消した字}
+  \hw(6.6,9.1){$\exists k$ s.t. $A_k = $ odd}
+  \redpen(12.0,9.1){← 前の行はこの否定\\（∀ even）}
+
+  \hw(0.5,10.6){\large $k$ 番目の袋を選ぶ以外の $N-1$ 個の袋の選び方は $2^{N-1}$}
+  \hw(0.2,12.5){\large これらの $N-1$ 個の袋から選んだ袋のビスケットの枚数}
+  \hwstrike(10.5,12.5){\large をS}
+  \hw(11.6,12.5){\large の}
+  \hw(0.3,13.6){\large 合計を $S$ とすると}
+
+  \hw(1.0,15.3){\large $S$ が奇数であれば\ $k$ 番目の袋を選ぶと合計は偶数，}
+  \hwline(1.4,15.75)(4.4,15.75)
+  \hw(0.6,16.4){\large 選ばないと合計は奇数，}
+  \hw(0.6,17.7){\large $S$ が偶数であれば，$k$ 番目の袋を選ぶと合計は奇数，}
+  \hw(0.6,18.8){\large 選ばないと合計は偶数，}
+  \hw(0.1,20.1){\large であるから，これらの $2^{N-1}$ 通り}
+
+  \redpen(0.8,21.8){どちらの $P$ でも、$k$ 番目を選ぶかどうかはちょうど 1 通りに決まる\\→ 奇数の袋があれば答えは $2^{N-1}$（Python で 1 回目の提出が AC）}
+  \redbox(4.2,19.45)(6.3,20.75)
+\end{memopage}
+
+% ---------------------------------------------------------------- 振り返り
+\clearpage
+\section*{agc017 A --- Biscuits}
+
+\begin{itemize}
+  \item 問題: \url{https://atcoder.jp/contests/agc017/tasks/agc017_a}
+  \item 提出（2026-08-04, Python）:
+    \href{https://atcoder.jp/contests/agc017/submissions/78114748}{AC}（1 回目で AC）
+  \item 手書き原本: \texttt{Box/Photo Backup/手書き/atcoder/agc017/a/}（撮影 2026-09-25。
+    \texttt{20260925\_174844.jpg} = 定式化、\texttt{20260925\_174809.jpg} = 場合分けと証明の 2 枚。
+    前の 2 ページが再現。赤は後から入れた振り返り）
+\end{itemize}
+
+\subsection*{メモで考えたこと}
+\begin{enumerate}
+  \item 袋を並べて描き、最初に「$A_i \bmod 2 = P$」と書いて消した（1 袋ずつの偶奇では決まらない）。
+  \item 選ぶかどうかを $c_k \in \lbrace 0,1 \rbrace$ とし、$\bigl(\sum c_k A_k\bigr) \bmod 2 = P$ となる $c$ の数え上げ、と定式化した。
+  \item 素直に全部試すと $2^N$ 通りで、$N = 50$ だと $2^{50}$ なので無理（メモに「$2^{50}$ ×」）。
+  \item サンプル \verb|1 1 / 50| → 0、\verb|2 0 / 1 3| → 2、\verb|3 0 / 1 1 1| → 4 を見て場合分けした。
+    \begin{itemize}
+      \item 全部の $A_i$ が偶数: 和は必ず偶数。$P = 0$ なら $2^N$、$P = 1$ なら $0$。
+      \item 奇数の $A_k$ がある: $k$ 番目以外の $N-1$ 袋の選び方は $2^{N-1}$。その和 $S$ が奇数なら $k$ を選べば偶数・選ばなければ奇数、$S$ が偶数なら逆。
+        どちらの $P$ に対しても \textbf{$k$ の選び方がちょうど 1 通りに決まる}ので、答えは $2^{N-1}$。
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{つまずき}
+\begin{itemize}
+  \item メモでは 1 つ目の場合を「$\forall A_i = $ odd」と書いているが、結論（$P=0$ なら $2^N$、$P=1$ なら $0$）が成り立つのは\textbf{全部偶数}のとき。直後の行が「$A_i$ has odd（$\exists k,\ A_k = $ odd）」なので、書き間違い。
+    コードは \verb|a[i] % 2 == 1| の有無で分けていて正しい（サンプル 3 つと、$N \leq 6$ の全探索との突き合わせ 200 ケースで一致を確認）。
+  \item 最初の「$A_i \bmod 2 = P$」は、和の偶奇を 1 項ずつの偶奇と混同した一歩目。すぐ消して $\sum$ の形に直せている。
+\end{itemize}
+
+\subsection*{正しい考え方}
+奇数の袋が 1 つでもあれば、それを「偶奇を調整する袋」として取っておくと、残りの選び方と 1 対 1 に対応する。
+よって答えは、奇数の袋があれば $2^{N-1}$、無ければ $P = 0$ のとき $2^N$、$P = 1$ のとき $0$。
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % 残り N-1 袋の選び方 → 和 S の偶奇 → k を選ぶか
+  \node[draw,rounded corners=2pt,align=center,minimum width=3.6cm] (rest) at (0,0) {残り $N-1$ 袋の選び方\\$2^{N-1}$ 通り};
+  \node[draw,rounded corners=2pt,minimum width=2.4cm] (odd) at (5,0.8) {$S$ が奇数};
+  \node[draw,rounded corners=2pt,minimum width=2.4cm] (even) at (5,-0.8) {$S$ が偶数};
+  \draw[-{Stealth}] (rest.east) -- (odd.west);
+  \draw[-{Stealth}] (rest.east) -- (even.west);
+  \node[anchor=west,align=left] at (7,0.8) {\small $P=0$: $k$ を選ぶ \quad $P=1$: 選ばない};
+  \node[anchor=west,align=left] at (7,-0.8) {\small $P=0$: 選ばない \quad $P=1$: $k$ を選ぶ};
+  \node[redpen] at (5,-1.9) {\small どの枝でも $k$ の扱いはちょうど 1 通り → 合計 $2^{N-1}$};
+\end{tikzpicture}
+\end{center}
+
+\subsection*{次に活かすこと}
+\begin{itemize}
+  \item 「和の偶奇が指定された部分集合の数」は、\textbf{調整役を 1 つ決めて残りを自由にする}全単射で数える。
+  \item 場合分けを書いたら、「$\forall$ / $\exists$」「odd / even」が次の行の結論と合っているか読み直す。
+\end{itemize}
+
+\end{document}
